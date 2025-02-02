@@ -1,21 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+using _Project.Scripts.Player;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
+using Zenject;
 
 // От B0N3head 
 // Всё ваше, используйте этот скрипт как хотите, не стесняйтесь указывать авторство, если хотите
 [AddComponentMenu("Движение игрока и управление камерой")]
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Настройки камеры")] [Tooltip("Закрепить курсор на экране игры во время игры")] [SerializeField]
-    private bool lockCursor = true;
-
     [Tooltip("Ограничить угол камеры (остановить камеру от \"скручивания шеи\")")] [SerializeField]
     private Vector2 clampInDegrees = new Vector2(360f, 180f);
-
-    [Tooltip("Чувствительность мыши, по оси x и y")] [SerializeField]
-    private Vector2 sensitivity = new Vector2(2f, 2f);
-
-    [Tooltip("Сглаживание движения мыши (попробуйте с ним и без него)")] [SerializeField]
-    private Vector2 smoothing = new Vector2(1.5f, 1.5f);
 
     [Tooltip("Должно иметь то же имя, что и ваша основная камера")] [SerializeField]
     private string cameraName = "Камера";
@@ -72,20 +67,7 @@ public class PlayerMovement : MonoBehaviour
     private float extraGravity = 0.1f;
 
     [Tooltip("Тег, который будет считаться землей")] [SerializeField]
-    private string groundTag = "Земля";
-
-    //----------------------------------------------------
-    [Space] [Header("Настройки клавиатуры")] [Tooltip("Клавиша для прыжка")] [SerializeField]
-    private KeyCode jump = KeyCode.Space;
-
-    [Tooltip("Клавиша для спринта")] [SerializeField]
-    private KeyCode sprint = KeyCode.LeftShift;
-
-    [Tooltip("Клавиша для приседания")] [SerializeField]
-    private KeyCode crouch = KeyCode.Z;
-
-    [Tooltip("Клавиша для переключения курсора")] [SerializeField]
-    private KeyCode lockToggle = KeyCode.Q;
+    private string groundTag = "Ground";
 
     //----------------------------------------------------
     [Space] [Header("Отладочная информация")] [Tooltip("Мы на земле?")] [SerializeField]
@@ -101,12 +83,11 @@ public class PlayerMovement : MonoBehaviour
     // Ссылочные переменные (эти переменные используются в расчетах, их не нужно задавать пользователю)
     private Rigidbody rb;
     private GameObject cam;
-    Vector3 input = new Vector3();
-    Vector2 _mouseAbsolute, _smoothMouse, targetDirection, targetCharacterDirection;
+    private Vector2 _mouseAbsolute, targetDirection, targetCharacterDirection;
     private float coyoteTimeCounter, jumpBufferCounter, startJumpTime, endJumpTime;
-    private bool wantingToJump = false, wantingToCrouch = false, wantingToSprint = false, jumpCooldownOver = true;
+    private bool jumpCooldownOver = true;
 
-    public bool IsStop { get; set; } = false;
+    [Inject] private InputService _inputService;
 
     private void Awake()
     {
@@ -125,25 +106,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (IsStop) return;
+        if (_inputService.IsStop) return;
 
         // Обновите позицию камеры
         cameraUpdate();
-
-        // Переместите все вводимые данные в Update(), затем используйте введенные данные в FixedUpdate()
-
-        // Движение WSAD
-        input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-        // Клавиша прыжка
-        wantingToJump = Input.GetKey(jump);
-        // Клавиша приседания
-        wantingToCrouch = Input.GetKey(crouch);
-        // Клавиша спринта
-        wantingToSprint = Input.GetKey(sprint);
-
-        // Переключение блокировки мыши (KeyDown срабатывает только один раз)
-        if (Input.GetKeyDown(lockToggle))
-            lockCursor = !lockCursor;
     }
 
     public void cameraUpdate()
@@ -152,18 +118,8 @@ public class PlayerMovement : MonoBehaviour
         var targetOrientation = Quaternion.Euler(targetDirection);
         var targetCharacterOrientation = Quaternion.Euler(targetCharacterDirection);
 
-        // Получить необработанный ввод мыши для более чистого считывания на более чувствительных мышах.
-        var mouseDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
-
-        // Масштабируйте ввод в соответствии с настройкой чувствительности и умножьте это на значение сглаживания.
-        mouseDelta = Vector2.Scale(mouseDelta, new Vector2(sensitivity.x * smoothing.x, sensitivity.y * smoothing.y));
-
-        // Интерполируйте движение мыши с течением времени, чтобы применить сглаживание.
-        _smoothMouse.x = Mathf.Lerp(_smoothMouse.x, mouseDelta.x, 1f / smoothing.x);
-        _smoothMouse.y = Mathf.Lerp(_smoothMouse.y, mouseDelta.y, 1f / smoothing.y);
-
         // Найдите абсолютное значение движения мыши от нулевой точки.
-        _mouseAbsolute += _smoothMouse;
+        _mouseAbsolute += _inputService._smoothMouse;
 
         // Ограничьте и примените локальное значение x сначала, чтобы не быть затронутым мировыми преобразованиями.
         if (clampInDegrees.x < 360)
@@ -182,13 +138,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (IsStop) return;
-
-        // Обработка блокировки курсора
-        if (lockCursor)
-            Cursor.lockState = CursorLockMode.Locked;
-        else
-            Cursor.lockState = CursorLockMode.None;
+        if (_inputService.IsStop) return;
 
         // Двойная проверка, находимся ли мы на земле или нет (изменяет текущую скорость, если верно)
         // --- КРАТКОЕ ОБЪЯСНЕНИЕ --- 
@@ -202,14 +152,14 @@ public class PlayerMovement : MonoBehaviour
             handleHitGround();
 
         // Спринт
-        if (wantingToSprint && areWeGrounded && !areWeCrouching)
+        if (_inputService.wantingToSprint && areWeGrounded && !areWeCrouching)
             currentSpeed = sprintMoveSpeed;
         else if (!areWeCrouching && areWeGrounded)
             currentSpeed = walkMoveSpeed;
 
         // Приседание 
         // Можно упростить до Crouch((wantingToCrouch && jumpCrouching)); хотя ниже более читаемо
-        if (wantingToCrouch && jumpCrouching)
+        if (_inputService.wantingToCrouch && jumpCrouching)
             Crouch(true);
         else
             Crouch(false);
@@ -223,7 +173,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Таймер буфера прыжка (Когда игрок покидает землю, начинаем отсчет от установленного значения jumpBuffer)
         // Это "буферизует" ввод и позволяет ранним нажатиям пробела быть действительными и больше не игнорироваться
-        if (wantingToJump)
+        if (_inputService.wantingToJump)
             jumpBufferCounter = jumpBuffer;
         else
             jumpBufferCounter -= Time.deltaTime;
@@ -241,26 +191,24 @@ public class PlayerMovement : MonoBehaviour
             endJumpTime = Time.time + jumpTime;
 
             // Ждем jumpCooldown (1f = 1 секунда), затем запускаем void jumpCoolDownCountdown()
-            Invoke(nameof(jumpCoolDownCountdown), jumpCooldown);
+            jumpCoolDownCountdown().Forget();
         }
-        else if (wantingToJump && !areWeGrounded && endJumpTime > Time.time)
+        else if (_inputService.wantingToJump && !areWeGrounded && endJumpTime > Time.time)
         {
             // Удерживайте пробел для дальнейшего прыжка (до истечения таймера)
             rb.AddForce(Vector3.up * jumpAccel, ForceMode.Acceleration);
         }
-
-        // Движение WSAD
-        input = input.normalized;
-        Vector3 forwardVel = transform.forward * currentSpeed * input.z;
-        Vector3 horizontalVel = transform.right * currentSpeed * input.x;
+        
+        Vector3 forwardVel = transform.forward * currentSpeed * _inputService.input.z;
+        Vector3 horizontalVel = transform.right * currentSpeed * _inputService.input.x;
         rb.velocity = horizontalVel + forwardVel + new Vector3(0, rb.velocity.y, 0);
 
-        // Дополнительная гравитация для более плавного прыжка
         rb.AddForce(new Vector3(0, -extraGravity, 0), ForceMode.Impulse);
     }
 
-    private void jumpCoolDownCountdown()
+    private async UniTask jumpCoolDownCountdown()
     {
+        await UniTask.Delay(TimeSpan.FromSeconds(jumpCooldown));
         jumpCooldownOver = true;
     }
 
@@ -314,7 +262,7 @@ public class PlayerMovement : MonoBehaviour
 //****** убедитесь, что то, что вы хотите считать землей в вашей игре, соответствует тегу, установленному в скрипте
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag == groundTag)
+        if (other.gameObject.CompareTag(groundTag))
             handleHitGround();
     }
 
