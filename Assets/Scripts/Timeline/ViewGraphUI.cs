@@ -30,17 +30,17 @@ namespace CodeScripts.Timeline.Timeline
 
                     foreach (var next in item.Next)
                     {
-                        Vector3 nextPos;
-                        if (ss.ContainsKey(next.name))
-                            nextPos = ss[next.name];
-                        else
-                            nextPos = startPosition + Vector3.right * 2 + Vector3.up * i * .2f;
-                        DrawNode(next, nextPos);
-                        Gizmos.DrawLine(end, nextPos);
-                        i += u;
+                        i++;
+                        if (ss.TryGetValue(next.name, out var value))
+                        {
+                            Gizmos.DrawLine(end, value);
+                            continue;
+                        }
 
-                        if (!ss.ContainsKey(next.name))
-                            ss.Add(next.name, nextPos);
+                        var nextPos = startPosition + Vector3.right * 2 + Vector3.up * i * .2f;
+                        Gizmos.DrawLine(end, nextPos);
+                        DrawNode(next, nextPos);
+                        ss.Add(next.name, nextPos);
                     }
                 }
             }
