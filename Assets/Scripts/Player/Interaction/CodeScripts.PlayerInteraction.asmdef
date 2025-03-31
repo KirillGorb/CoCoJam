@@ -1,0 +1,19 @@
+{
+    "name": "CodeScripts.PlayerInteraction",
+    "rootNamespace": "CodeScripts.PlayerInteraction",
+    "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:de4842bdef2bed1489298f1a15a7e930",
+        "GUID:b9ca7e167964f22408d88bc7071a9369"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

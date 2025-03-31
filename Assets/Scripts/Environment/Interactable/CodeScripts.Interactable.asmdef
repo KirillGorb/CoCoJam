@@ -1,0 +1,21 @@
+{
+    "name": "CodeScripts.Interactable",
+    "rootNamespace": "CodeScripts.Interactable",
+    "references": [
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:de4842bdef2bed1489298f1a15a7e930",
+        "GUID:05918e18508c4d741b3b7193bf065065",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:5c01796d064528144a599661eaab93a6",
+        "GUID:4129704b5a1a13841ba16f230bf24a57"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

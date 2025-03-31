@@ -1,0 +1,21 @@
+{
+    "name": "CodeScripts.Environment.Location1",
+    "rootNamespace": "CodeScripts.Environment.Location1",
+    "references": [
+        "GUID:03d66ad29d1c3614ea48aa7fbb80f355",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:21aef7ae70234ec3ae41df7ec44d3c9c",
+        "GUID:1bed930916950ea4ea0b8b04d3d60e07",
+        "GUID:de4842bdef2bed1489298f1a15a7e930",
+        "GUID:78aabe4c7bf7ff047a0323f93959a85f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

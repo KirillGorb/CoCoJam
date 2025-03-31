@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 8970e265d32d4009b8d1c7079a6088dd
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - move: {fileID: 11400000, guid: 1c5369436e2fe8645a81b09915342dcd, type: 2}
+  - animData: {instanceID: 0}
+  - hookConfig: {instanceID: 0}
+  - interectiveConfig: {instanceID: 0}
+  - configDrag: {instanceID: 0}
+  - tagetDrag: {instanceID: 0}
+  - rd2D: {instanceID: 0}
+  - anim: {instanceID: 0}
+  - checkGroundDown: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,14 @@
+{
+    "name": "CodeScripts.Scene",
+    "rootNamespace": "CodeScripts.Scene",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "CodeScripts.Environment",
+    "rootNamespace": "CodeScripts.Environment",
+    "references": [
+        "GUID:03d66ad29d1c3614ea48aa7fbb80f355",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "CodeScripts.PlayerInputs",
+    "rootNamespace": "CodeScripts.PlayerInputs",
+    "references": [
+        "GUID:1aa1babf59a129d4d90f564d30e52699",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

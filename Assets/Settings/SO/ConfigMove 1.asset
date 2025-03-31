@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9123a4a8fb124cc5b97512fac815a6a1, type: 3}
+  m_Name: ConfigMove 1
+  m_EditorClassIdentifier: 
+  <MoveX>k__BackingField:
+    speed: 1.75
+    speedSed: 0.8
+    slowVelocity: 5
+  <MoveY>k__BackingField:
+    timeJump: 2.07
+    velocityJump: 3.14
+    poolTimeClick: 0.1
+    countDopJump: -1
+    groundLayerMask:
+      serializedVersion: 2
+      m_Bits: 4352
+    groundCheckRadius: 0.04
+    groundCheckOffset: {x: 0, y: 0.07}
+    gravityScale: 1.4
+    slopeCheckOffset: 0.08
+    groundExitCooldown: 0.1

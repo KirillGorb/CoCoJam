@@ -1,0 +1,17 @@
+{
+    "name": "CodeScripts.ImprovedDelegate",
+    "rootNamespace": "CodeScripts.ImprovedDelegate",
+    "references": [
+        "GUID:53663f61a0387ea42b78708a82185854",
+        "GUID:ce99dafbeaac33e4a96c0c334897f1a3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
