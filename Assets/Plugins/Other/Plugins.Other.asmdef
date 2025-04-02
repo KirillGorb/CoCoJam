@@ -1,9 +1,7 @@
 {
-    "name": "CodeScripts.Timeline",
-    "rootNamespace": "CodeScripts.Timeline",
-    "references": [
-        "GUID:5fc707ad9e519ab4d830ce16819981c7"
-    ],
+    "name": "Plugins.Other",
+    "rootNamespace": "Plugins.Other",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
