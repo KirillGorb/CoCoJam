@@ -25,8 +25,6 @@ namespace CodeScripts.Player
 
         public override void InstallBindings()
         {
-            Container.Bind<DisposableCollection>().WithId("Scene").FromNew().AsSingle();
-
             BindData();
             BindInstances();
             BindServices();
@@ -94,8 +92,10 @@ namespace CodeScripts.Player
         {
             Container.Bind<DataSwitcher>().FromNew().AsSingle();
             Container.Bind<LayerResponseSwitcher>().FromNew().AsSingle();
+            Container.Bind<TagResponseSwitcher>().FromNew().AsSingle();
 
             Container.BindInterfacesAndSelfTo<DataKill>().FromNew().AsSingle();
+            Container.BindInterfacesAndSelfTo<FinishLevelService>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<KillPlayerService>().FromNew().AsSingle();
 
             Container.BindInterfacesAndSelfTo<DataUpJump>().FromNew().AsSingle();

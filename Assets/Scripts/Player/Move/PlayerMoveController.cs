@@ -6,6 +6,7 @@ using CodeScripts.PlayerMove.State.Logics;
 using System;
 using System.Collections.Generic;
 using CodeScripts.PlayerInteraction;
+using UniRx;
 using UnityEngine;
 using Zenject;
 
@@ -19,7 +20,7 @@ namespace CodeScripts.PlayerMove
 
         [Inject] private ConfigMove _configMove;
         [Inject] private Rigidbody2D _rigidbody2D;
-        [Inject(Id = "Scene")] private readonly DisposableCollection _disposables;
+        private readonly CompositeDisposable _disposables = new();
 
         public void SetBaseState()
         {

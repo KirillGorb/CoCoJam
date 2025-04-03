@@ -2,13 +2,15 @@
 using UnityEditor;
 using UnityEngine;
 using Plugins.Other;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace CodeScripts.Timeline.Timeline
 {
     public class ViewGraphUI : MonoBehaviour
     {
         [SerializeField] private GraphModel graphModel;
-        [SerializeField] private GameObject prefab;
+        [SerializeField] private Button prefab;
         [SerializeField] private UILineRenderer rendererLine;
         [SerializeField] private Transform parent;
         [SerializeField] private float stepHeight;
@@ -29,7 +31,7 @@ namespace CodeScripts.Timeline.Timeline
                 }
                 else
                 {
-                    SpawnCollapse(startPosition);
+                    SpawnCollapse(startPosition, item.Current);
                 }
 
                 float i = -stepHeight * 2;
@@ -46,18 +48,20 @@ namespace CodeScripts.Timeline.Timeline
 
                     var nextPos = (Vector2)transform.position + offsetInitPos + new Vector2(j * stepWidth, i);
                     DrawLine(end, nextPos);
-                    SpawnCollapse(nextPos);
+                    SpawnCollapse(nextPos, next);
                     noCopy.Add(next.name, nextPos);
                 }
             }
         }
 
-        private void SpawnCollapse(Vector3 position)
+        private void SpawnCollapse(Vector3 position, CollapseModel collapse)
         {
             var p = Instantiate(prefab, position, Quaternion.identity);
-            p.SetActive(true);
+            p.gameObject.SetActive(true);
             p.transform.SetParent(transform);
             p.transform.localScale = Vector3.one;
+
+            p.onClick.AddListener(() => { SceneManager.LoadScene(collapse.ScenePlay.name); });
         }
 
         private void DrawLine(Vector2 start, Vector2 end)

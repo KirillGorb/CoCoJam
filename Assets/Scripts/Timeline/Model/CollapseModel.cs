@@ -1,5 +1,7 @@
 ﻿using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CodeScripts.Timeline
 {
@@ -7,6 +9,7 @@ namespace CodeScripts.Timeline
     public class CollapseModel : ScriptableObject
     {
         [field: SerializeField] public bool IsActive { get; set; }
+        [field: SerializeField] public SceneAsset ScenePlay { get; set; }
         
         [SerializeField, LabelText("Model Name")] 
         private string modelName;

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CodeScripts.Abstraction;
-using Zenject;
+using UniRx;
 
 namespace CodeScripts.PlayerResponse
 {
@@ -13,67 +13,100 @@ namespace CodeScripts.PlayerResponse
         public readonly Dictionary<object, IData> Container = new();
     }
 
-    public sealed class LayerResponseSwitcher : CollisionResponseSwitcher<LayerMask>
+    public abstract class CollisionResponseSwitcher<T> : IDisposable
     {
-        [Inject(Id = "Scene")] private readonly DisposableCollection _disposables = new();
-
-        public LayerResponseSwitcher(PlayerCollisionDetector playerCollisionDetector, DataSwitcher dataSwitcher)
-        {
-            playerCollisionDetector.IncomingColliders
-                .Where(e => dataSwitcher.Container.ContainsKey(e.gameObject.layer))
-                .Subscribe(
-                    e => Use(e.gameObject.layer, dataSwitcher.Container[e.gameObject.layer]),
-                    endE => StopUse(endE.gameObject.layer,
-                        dataSwitcher.Container.ContainsKey(endE.gameObject.layer)
-                            ? dataSwitcher.Container[endE.gameObject.layer]
-                            : null))
-                .AddTo(_disposables);
-        }
-    }
-
-    public abstract class CollisionResponseSwitcher<T>
-    {
+        private readonly CompositeDisposable _disposables = new();
         private readonly Dictionary<T, List<IPlayerResponseService>> _responses = new();
 
-        protected void Use<TQ>(T layer, TQ data) where TQ : IData
+        public CollisionResponseSwitcher(PlayerCollisionDetector playerCollisionDetector, DataSwitcher dataSwitcher)
         {
-            if (!_responses.ContainsKey(layer))
+            playerCollisionDetector.IncomingColliders
+                .ObserveAdd()
+                .Subscribe(e =>
+                {
+                    var v = KeyCollider(e.Value);
+                    if (dataSwitcher.Container.TryGetValue(v, out var data))
+                        Use(v, data);
+                    else
+                        Use<IData>(v, null);
+                }).AddTo(_disposables);
+
+            playerCollisionDetector.IncomingColliders
+                .ObserveRemove()
+                .Subscribe(e =>
+                {
+                    var v = KeyCollider(e.Value);
+                    if (dataSwitcher.Container.TryGetValue(v, out var data))
+                        StopUse(v, data);
+                    else
+                        StopUse<IData>(v, null);
+                }).AddTo(_disposables);
+
+
+            playerCollisionDetector.IncomingCollisions
+                .ObserveAdd()
+                .Subscribe(e =>
+                {
+                    var v = KeyCollision(e.Value);
+                    if (dataSwitcher.Container.TryGetValue(v, out var data))
+                        Use(v, data);
+                    else
+                        Use<IData>(v, null);
+                }).AddTo(_disposables);
+
+            playerCollisionDetector.IncomingCollisions
+                .ObserveRemove()
+                .Subscribe(e =>
+                {
+                    var v = KeyCollision(e.Value);
+                    if (dataSwitcher.Container.TryGetValue(v, out var data))
+                        StopUse(v, data);
+                    else
+                        StopUse<IData>(v, null);
+                }).AddTo(_disposables);
+        }
+
+        public abstract T KeyCollider(Collider2D content);
+        public abstract T KeyCollision(Collision2D content);
+
+        public void AddResponse(T key, IPlayerResponseService responseService)
+        {
+            if (!_responses.ContainsKey(key))
+                _responses.Add(key, new());
+
+            _responses[key].Add(responseService);
+        }
+
+        public void RemoveResponse(T key, IPlayerResponseService responseService)
+        {
+            if (!_responses.ContainsKey(key))
                 return;
 
-            foreach (var response in _responses[layer])
-                response.Response(data);
-        }
-
-        protected void StopUse<TQ>(T layer, TQ data) where TQ : IData
-        {
-            if (!_responses.ContainsKey(layer))
-                return;
-
-            foreach (var response in _responses[layer])
-                response.StopResponse(data);
-        }
-
-        public void AddResponse(T layer, IPlayerResponseService responseService)
-        {
-            if (!_responses.ContainsKey(layer))
-                _responses.Add(layer, new());
-
-            _responses[layer].Add(responseService);
-        }
-
-        public void RemoveResponse(T layer, IPlayerResponseService responseService)
-        {
-            if (!_responses.ContainsKey(layer))
-                throw new InvalidOperationException();
-
-            foreach (var service in _responses[layer])
+            foreach (var service in _responses[key])
                 if (responseService.GetType() == service.GetType())
                 {
-                    _responses[layer].Remove(service);
+                    _responses[key].Remove(service);
                     return;
                 }
+        }
 
-            throw new InvalidOperationException();
+        private void Use<Q>(T key, Q data) where Q : IData
+        {
+            if (_responses.TryGetValue(key, out var responses))
+                foreach (var response in responses)
+                    response.Response(data);
+        }
+
+        private void StopUse<Q>(T key, Q data) where Q : IData
+        {
+            if (_responses.TryGetValue(key, out var responses))
+                foreach (var response in responses)
+                    response.StopResponse(data);
+        }
+
+        public void Dispose()
+        {
+            _disposables.Dispose();
         }
     }
 }

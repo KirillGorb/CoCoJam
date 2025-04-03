@@ -4,6 +4,7 @@ using CodeScripts.PlayerMove.Config.Data;
 using UnityEngine;
 using Zenject;
 using CodeScripts.PlayerInteraction;
+using UniRx;
 
 namespace CodeScripts.PlayerMove.State.Logics
 {
@@ -14,8 +15,8 @@ namespace CodeScripts.PlayerMove.State.Logics
         [Inject] private readonly Rigidbody2D _rigidbody2D;
         [Inject] private readonly ConfigMove _configMove;
 
-        [Inject(Id = "Scene")] private readonly DisposableCollection _disposables;
         [Inject] private readonly PlayerCollisionDetector _playerCollisionDetector;
+        private readonly CompositeDisposable _disposables = new();
 
         public ConfigMoveY _config;
 
@@ -51,7 +52,10 @@ namespace CodeScripts.PlayerMove.State.Logics
         {
             _config = _configMove.MoveY;
             _playerCollisionDetector.IncomingCollisions
-                .Subscribe(_ => _isGrounded = true, _ => _isGrounded = false)
+                .ObserveAdd().Subscribe(_ => _isGrounded = true)
+                .AddTo(_disposables);
+            _playerCollisionDetector.IncomingCollisions
+                .ObserveRemove().Subscribe(_ => _isGrounded = false)
                 .AddTo(_disposables);
         }
 
@@ -139,7 +143,8 @@ namespace CodeScripts.PlayerMove.State.Logics
 
         private bool IsLedgeAhead()
         {
-            RaycastHit2D hit = Physics2D.Raycast(_rigidbody2D.position + Vector2.up * _config.upOffsetHeight, Vector2.right * InputCallback.HorizontalInput, _config.ledgeCheckDistance, _config.groundLayerMask);
+            RaycastHit2D hit = Physics2D.Raycast(_rigidbody2D.position + Vector2.up * _config.upOffsetHeight,
+                Vector2.right * InputCallback.HorizontalInput, _config.ledgeCheckDistance, _config.groundLayerMask);
             return hit.collider != null && hit.point.y <= _rigidbody2D.position.y + _config.ledgeHeight;
         }
 

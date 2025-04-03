@@ -12,3 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c386baf590d4cc3b458ab7bc0ab70ea, type: 3}
   m_Name: Collapse_2_1_Model
   m_EditorClassIdentifier: 
+  <IsActive>k__BackingField: 0
+  <ScenePlay>k__BackingField: {fileID: 102900000, guid: 47aa8d22e1e1cc34c82ec5da03bbca2c, type: 3}
+  modelName: 
+  value: 0
+  description: 

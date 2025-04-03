@@ -1,7 +1,7 @@
 ﻿using CodeScripts.Abstraction;
-using CodeScripts.PlayerInputs;
 using CodeScripts.PlayerInteraction;
 using CodeScripts.PlayerMove.State.Logics;
+using UniRx;
 using UnityEngine;
 
 namespace CodeScripts.PlayerMove.State
@@ -20,7 +20,7 @@ namespace CodeScripts.PlayerMove.State
 
         public NewBaseMove(MoveX moveX, MoveY moveY, Rigidbody2D rigidbody,
             InterectiveDetect interective, PlayerCollisionDetector playerCollisionDetector,
-            DisposableCollection disposables, HookDetect hook)
+            CompositeDisposable disposables, HookDetect hook)
         {
             _hook = hook;
             _moveX = moveX;
@@ -29,9 +29,10 @@ namespace CodeScripts.PlayerMove.State
             _rigidbody = rigidbody;
 
             playerCollisionDetector.IncomingCollisions
-                .Subscribe(
-                    e => _collider = e,
-                    _ => _collider = null)
+                .ObserveAdd().Subscribe(e => _collider = e.Value)
+                .AddTo(disposables);
+            playerCollisionDetector.IncomingCollisions
+                .ObserveRemove().Subscribe(_ => _collider = null)
                 .AddTo(disposables);
         }
 
@@ -42,8 +43,7 @@ namespace CodeScripts.PlayerMove.State
 
             var y = _moveY.Value();
             if (_collider is not null && !_moveY.IsJump)
-                _rigidbody.velocity =
-                    _angleToCollider.GetMoveVector(_collider, new Vector2(_moveX.Value(), _rigidbody.velocity.y));
+                _rigidbody.velocity = _angleToCollider.GetMoveVector(_collider, new Vector2(_moveX.Value(), _rigidbody.velocity.y));
             else
                 _rigidbody.velocity = new Vector2(_moveX.Value(), y);
 

@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Timeline.unity
+    guid: 13de7a3ec1a5c7749ab6889aa9bf28b6
+  - enabled: 1
+    path: Assets/TemplateScene.unity
+    guid: 47aa8d22e1e1cc34c82ec5da03bbca2c
   m_configObjects: {}

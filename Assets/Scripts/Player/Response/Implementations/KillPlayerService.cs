@@ -1,42 +1,35 @@
 ﻿using System;
 using System.Threading;
 using CodeScripts.Abstraction;
+using CodeScripts.PlayerInteraction;
 using CodeScripts.PlayerMove;
 using CodeScripts.PlayerMove.State.Datas;
 using CodeScripts.PlayerResponse.Implementations.Abstraction;
 using CodeScripts.Respawn;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 using Zenject;
 
 namespace CodeScripts.PlayerResponse.Implementations
 {
-  /*  public class UpJumpPlayerService : IPlayerResponseService
+    public sealed class LayerResponseSwitcher : CollisionResponseSwitcher<LayerMask>
     {
-        //  [Inject] private PlayerMoveController _playerMoveController;
-
-        public UniTask Response<T>(T data) where T : IData
+        public LayerResponseSwitcher(PlayerCollisionDetector playerCollisionDetector, DataSwitcher dataSwitcher) : base(
+            playerCollisionDetector, dataSwitcher)
         {
-            if (data is not DataUpJump upJump) return UniTask.CompletedTask;
-
-            return UniTask.CompletedTask;
         }
+
+        public override LayerMask KeyCollider(Collider2D content) => content.gameObject.layer;
+        public override LayerMask KeyCollision(Collision2D content) => content.gameObject.layer;
     }
-
-    public class DataUpJump : IData, IInitializable
-    {
-        public float JumpHeight;
-        public float JumpTime;
-
-        public void Initialize()
-        {
-        }
-    }*/
 
     public class KillPlayerService : IPlayerResponseService, IInitializable
     {
         [Inject] private RespawnController _respawnController;
         [Inject] private LayerResponseSwitcher _switcher;
         [Inject] private PlayerMoveController _playerMoveController;
+
+        private CancellationTokenSource _cancellationTokenSource;
 
         public void Initialize()
         {
@@ -47,14 +40,17 @@ namespace CodeScripts.PlayerResponse.Implementations
         {
             if (data is not DataKill killer) return;
 
+            _cancellationTokenSource = new();
             _playerMoveController.SetState(new NoMoveData());
-            await UniTask.Delay(TimeSpan.FromSeconds(killer.KillTime));
+            await UniTask.Delay(TimeSpan.FromSeconds(killer.KillTime),
+                cancellationToken: _cancellationTokenSource.Token);
             _respawnController.Respawn();
             _playerMoveController.SetBaseState();
         }
 
         public UniTask StopResponse<T>(T data, CancellationToken token = default) where T : IData
         {
+            _cancellationTokenSource.Cancel();
             return UniTask.CompletedTask;
         }
     }
