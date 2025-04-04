@@ -1,6 +1,7 @@
 ﻿using CodeScripts.SaveLoadSystem;
 using CodeScripts.Timeline.Model;
 using UnityEngine;
+using Zenject;
 
 namespace CodeScripts.Timeline
 {
@@ -10,23 +11,22 @@ namespace CodeScripts.Timeline
         public ECollapseMode[] AllCollapseMode;
     }
 
-    public class LoadProgressTimeline
+    public class LoadProgressTimeline : IInitializable
     {
-        private readonly TimelineSD _data;
-        private readonly GraphModel _model;
-        private readonly Save<TimelineSD> _saver;
+        [Inject] private readonly GraphModel _model;
+        [Inject] private readonly Save<TimelineSD> _saver;
 
-        public LoadProgressTimeline(Save<TimelineSD> saver, GraphModel model)
+        private TimelineSD _data;
+        
+        public void Initialize()
         {
             Debug.Log(11);
-            _model = model;
-            _saver = saver;
             _model.AllCollapse.LoadID();
 
-            _data = saver.LoadData();
+            _data = _saver.LoadData();
             if (_data?.AllCollapseMode is null)
             {
-                var allCollapseMode = new ECollapseMode[model.AllCollapse.Containers.Count];
+                var allCollapseMode = new ECollapseMode[_model.AllCollapse.Containers.Count];
 
                 allCollapseMode[0] = ECollapseMode.Active;
                 for (var i = 1; i < allCollapseMode.Length; i++)

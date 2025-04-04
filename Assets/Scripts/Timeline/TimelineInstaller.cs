@@ -13,7 +13,7 @@ namespace CodeScripts.Timeline
         {
             Container.BindInstance(graphModel).AsSingle();
             Container.Bind<Save<TimelineSD>>().FromNew().AsSingle();
-            Container.Bind<LoadProgressTimeline>().FromNew().AsSingle();
+            Container.BindInterfacesAndSelfTo<LoadProgressTimeline>().FromNew().AsSingle();
         }
     }
 }
