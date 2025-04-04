@@ -1,15 +1,19 @@
 ﻿using System.Collections.Generic;
+using CodeScripts.SaveLoadSystem;
 using UnityEditor;
 using UnityEngine;
 using Plugins.Other;
+using UniRx;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Zenject;
 
-namespace CodeScripts.Timeline.Timeline
+namespace CodeScripts.Timeline
 {
+    using Model;
+
     public class ViewGraphUI : MonoBehaviour
     {
-        [SerializeField] private GraphModel graphModel;
         [SerializeField] private Button prefab;
         [SerializeField] private UILineRenderer rendererLine;
         [SerializeField] private Transform parent;
@@ -17,13 +21,21 @@ namespace CodeScripts.Timeline.Timeline
         [SerializeField] private float stepWidth;
         [SerializeField] private Vector2 offsetInitPos;
 
+        [Inject] private readonly GraphModel _graphModel;
+        [Inject] private readonly Save<TimelineSD> _save;
+
+        private TimelineSD _saveData;
+
+        private readonly CompositeDisposable _disposable = new();
+
         private void Start()
         {
+            _saveData = _save.LoadData();
             Dictionary<string, Vector2> noCopy = new();
             Vector2 startPosition = (Vector2)transform.position + offsetInitPos;
 
             int j = 0;
-            foreach (var item in graphModel.GraphCollapse)
+            foreach (var item in _graphModel.GraphCollapse)
             {
                 if (noCopy.ContainsKey(item.Current.name))
                 {
@@ -54,6 +66,11 @@ namespace CodeScripts.Timeline.Timeline
             }
         }
 
+        private void OnDestroy()
+        {
+            _disposable.Dispose();
+        }
+
         private void SpawnCollapse(Vector3 position, CollapseModel collapse)
         {
             var p = Instantiate(prefab, position, Quaternion.identity);
@@ -61,7 +78,34 @@ namespace CodeScripts.Timeline.Timeline
             p.transform.SetParent(transform);
             p.transform.localScale = Vector3.one;
 
-            p.onClick.AddListener(() => { SceneManager.LoadScene(collapse.ScenePlay.name); });
+            var i = p.GetComponent<Image>();
+
+            ECollapseMode s = ECollapseMode.Inactive;
+            if (_saveData?.AllCollapseMode?.Length > collapse.ID)
+                s = _saveData.AllCollapseMode[collapse.ID];
+
+            switch (s)
+            {
+                case ECollapseMode.Active:
+                    i.color = Color.yellow;
+                    break;
+                case ECollapseMode.Inactive:
+                    i.color = Color.grey;
+                    break;
+                case ECollapseMode.End:
+                    i.color = Color.green;
+                    break;
+            }
+
+            p.OnClickAsObservable().Subscribe(_ =>
+            {
+                if (_saveData?.AllCollapseMode?[collapse.ID] == ECollapseMode.Active)
+                {
+                    _saveData.IdOpenCollapse = collapse.ID;
+                    _save.SaveData(_saveData);
+                    SceneManager.LoadScene(collapse.ScenePlay.name);
+                }
+            }).AddTo(_disposable);
         }
 
         private void DrawLine(Vector2 start, Vector2 end)
@@ -74,15 +118,16 @@ namespace CodeScripts.Timeline.Timeline
             renderers.SetAllDirty();
         }
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            if (graphModel == null || graphModel.GraphCollapse == null) return;
+            if (_graphModel == null || _graphModel.GraphCollapse == null) return;
 
             Dictionary<string, Vector3> ss = new();
             Vector3 startPosition = (Vector2)transform.position + offsetInitPos;
             int j = 0;
 
-            foreach (var item in graphModel.GraphCollapse)
+            foreach (var item in _graphModel.GraphCollapse)
             {
                 if (ss.ContainsKey(item.Current.name))
                     startPosition = ss[item.Current.name];
@@ -120,5 +165,6 @@ namespace CodeScripts.Timeline.Timeline
             GUIStyle style = new GUIStyle();
             Handles.Label(position + Vector3.up * 0.2f, collapseModel.name, style);
         }
+#endif
     }
 }

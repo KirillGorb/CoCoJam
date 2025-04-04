@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffdfc9a5e82989b4795c48ea9587db9c, type: 3}
   m_Name: GraphModel
   m_EditorClassIdentifier: 
+  <AllCollapse>k__BackingField: {fileID: 11400000, guid: 0896a296c439fdb49b5523f02825014d, type: 2}
   <GraphCollapse>k__BackingField:
   - <Current>k__BackingField: {fileID: 11400000, guid: fa995434b8f72da4ba092e149da20f93, type: 2}
     <Next>k__BackingField:

@@ -1,14 +1,20 @@
 ﻿using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-namespace CodeScripts.Timeline
+namespace CodeScripts.Timeline.Model
 {
+    public enum ECollapseMode
+    {
+        Inactive,
+        Active,
+        End,
+    }
+    
     [CreateAssetMenu(fileName = "CollapseModel", menuName = "Timeline/CollapseModel")]
     public class CollapseModel : ScriptableObject
     {
-        [field: SerializeField] public bool IsActive { get; set; }
+        [field: SerializeField] public int ID { get; set; }
         [field: SerializeField] public SceneAsset ScenePlay { get; set; }
         
         [SerializeField, LabelText("Model Name")] 

@@ -11,7 +11,7 @@ using Zenject;
 
 namespace CodeScripts.Player
 {
-    public class PlayerLocalInstaller : MonoInstaller
+    public class PlayerInstaller : MonoInstaller
     {
         [SerializeField] private ConfigMove _moveConfig;
         [SerializeField] private HookConfig _hookConfig;

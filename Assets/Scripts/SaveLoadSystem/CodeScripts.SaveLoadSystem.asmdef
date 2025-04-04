@@ -1,6 +1,6 @@
 {
-    "name": "CodeScripts.Algorithms",
-    "rootNamespace": "CodeScripts.Algorithms",
+    "name": "CodeScripts.SaveLoadSystem",
+    "rootNamespace": "CodeScripts.SaveLoadSystem",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
