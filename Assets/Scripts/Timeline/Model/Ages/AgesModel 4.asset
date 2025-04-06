@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c386baf590d4cc3b458ab7bc0ab70ea, type: 3}
-  m_Name: Collapse_2_2_Model
+  m_Script: {fileID: 11500000, guid: b75dfd3aca304e2d96d04ce984051c79, type: 3}
+  m_Name: AgesModel 4
   m_EditorClassIdentifier: 
-  <IsActive>k__BackingField: 0
-  <ScenePlay>k__BackingField: {fileID: 102900000, guid: 47aa8d22e1e1cc34c82ec5da03bbca2c, type: 3}
-  modelName: 
-  value: 0
-  description: 
+  <Ages>k__BackingField:
+  - {fileID: 11400000, guid: c2d8226e10c65424ea8d5407879a4d60, type: 2}

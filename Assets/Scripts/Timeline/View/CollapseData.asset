@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44446bc62efd411a841922e26f0b52f4, type: 3}
+  m_Name: CollapseData
+  m_EditorClassIdentifier: 
+  <Colors>k__BackingField:
+  - {r: 0.5924529, g: 0.5924529, b: 0.5924529, a: 1}
+  - {r: 0.81886786, g: 0.7551454, b: 0.37544313, a: 1}
+  - {r: 0.39434007, g: 0.82641506, b: 0.35395512, a: 1}
+  - {r: 0.37578496, g: 0.5344756, b: 0.90943396, a: 1}
+  - {r: 0.78113204, g: 0.346351, b: 0.346351, a: 1}
+  <Mode>k__BackingField: 0000000001000000020000000300000004000000

@@ -1,5 +1,5 @@
-﻿using Sirenix.OdinInspector;
-using UnityEditor;
+﻿using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace CodeScripts.Timeline.Model
@@ -9,13 +9,17 @@ namespace CodeScripts.Timeline.Model
         Inactive,
         Active,
         End,
+        Rollback,
+        Cansel
     }
     
     [CreateAssetMenu(fileName = "CollapseModel", menuName = "Timeline/CollapseModel")]
     public class CollapseModel : ScriptableObject
     {
         [field: SerializeField] public int ID { get; set; }
-        [field: SerializeField] public SceneAsset ScenePlay { get; set; }
+        [field: SerializeField] public ECollapseMode Mode { get; set; }
+        [field: SerializeField] public string ScenePlay { get; set; }
+        [field: SerializeField] public List<CollapseModel> Branches { get; set; }
         
         [SerializeField, LabelText("Model Name")] 
         private string modelName;

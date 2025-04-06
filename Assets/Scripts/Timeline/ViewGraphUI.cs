@@ -103,19 +103,21 @@ namespace CodeScripts.Timeline
                 {
                     _saveData.IdOpenCollapse = collapse.ID;
                     _save.SaveData(_saveData);
-                    SceneManager.LoadScene(collapse.ScenePlay.name);
+                    SceneManager.LoadScene(collapse.ScenePlay);
                 }
             }).AddTo(_disposable);
         }
 
         private void DrawLine(Vector2 start, Vector2 end)
         {
-            var renderers = Instantiate(rendererLine, parent);
+            var renderers = Instantiate(rendererLine, rendererLine.transform);
             Vector2 canvasStart = RectTransformUtility.WorldToScreenPoint(Camera.main, start);
             Vector2 canvasEnd = RectTransformUtility.WorldToScreenPoint(Camera.main, end);
 
             renderers.points = new[] { canvasStart, canvasEnd };
             renderers.SetAllDirty();
+            
+            renderers.transform.parent = parent;
         }
 
 #if UNITY_EDITOR
