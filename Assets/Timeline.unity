@@ -775,7 +775,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8f1fa2d6e914db6b304ac47588ed2c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  graphModel: {fileID: 11400000, guid: aacd29fd4bea8554795911b1e8af1e02, type: 2}
+  data: {fileID: 11400000, guid: f5fa26d48000b1945be85c56aee16b14, type: 2}
 --- !u!1 &1906798493
 GameObject:
   m_ObjectHideFlags: 0
@@ -900,15 +900,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e122bc1c647420b9293236376f97759, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timelines:
-  - {fileID: 11400000, guid: 535033926d727164eab6033b73eb02c8, type: 2}
-  - {fileID: 11400000, guid: 84b271e9f1b4e5e458499152cae9cb66, type: 2}
-  - {fileID: 11400000, guid: 8adfa9643bc1156489c32b9219a7fdd6, type: 2}
-  ages:
-  - {fileID: 11400000, guid: 6bcf5668a54cbbc4d96c58e157969107, type: 2}
-  - {fileID: 11400000, guid: f13d5e74329753b4da7e8befb6e06b54, type: 2}
-  - {fileID: 11400000, guid: c9afd098e12c1a54dbdac6a43a604246, type: 2}
-  - {fileID: 11400000, guid: 3181ecb83b32d014d92cf987a9595b0f, type: 2}
   containerView: {fileID: 7732745795689681261, guid: a5b7c7c9c82a11f4ea466f8e817f4c75, type: 3}
   container: {fileID: 2091108957}
   offset: {x: -7, y: 1}

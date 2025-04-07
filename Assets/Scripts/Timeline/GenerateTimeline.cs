@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
+using CodeScripts.Scene;
 using CodeScripts.Timeline.Model;
 using CodeScripts.Timeline.View;
 using Cysharp.Threading.Tasks;
+using ModestTree;
 using Plugins.Other;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace CodeScripts.Timeline
 {
     public class GenerateTimeline : MonoBehaviour
     {
-        [SerializeField] private TimelineModel[] timelines;
-        [SerializeField] private AgesModel[] ages;
-
-        [Space] [SerializeField] private CollapseContainerView containerView;
+        [SerializeField] private CollapseContainerView containerView;
         [SerializeField] private Transform container;
         [SerializeField] private Vector2 offset;
         [SerializeField] private float step;
@@ -21,48 +21,65 @@ namespace CodeScripts.Timeline
         [Space] [SerializeField] private UILineRenderer rendererLine;
         [SerializeField] private Transform lineContainer;
 
-        private readonly List<CollapseView> _views = new();
+        [Inject] private readonly TimelineData _data;
+        [Inject] private readonly SceneController _sceneController;
+        [Inject] private readonly LoadProgressTimeline _loadProgressTimeline;
+
         private readonly CompositeDisposable _disposables = new();
+
+        public readonly List<CollapseView> Views = new();
 
         private void Awake()
         {
+            SpawnCollapse();
+        }
+
+        private void Start()
+        {
+            SpawnLine().Forget();
+        }
+
+        private void SpawnCollapse()
+        {
             int i = 0;
-            foreach (var age in ages)
+            foreach (var age in _data.Ages)
             {
                 var c = Instantiate(containerView, container);
                 c.transform.position = offset + (i++) * Vector2.right * step;
                 foreach (var collapse in age.Ages)
                 {
-                    var v = c.Spawn(collapse, _disposables);
+                    var v = c.Spawn(collapse, _sceneController,
+                        e => _loadProgressTimeline.SetID(e),
+                        _disposables);
                     if (v is not null)
-                        _views.Add(v);
+                        Views.Add(v);
                 }
             }
         }
 
-        private async void Start()
+        private async UniTaskVoid SpawnLine()
         {
             await UniTask.DelayFrame(1);
 
-            foreach (var timeline in timelines)
+            foreach (var timeline in _data.Timelines)
             {
                 var l = Instantiate(rendererLine, rendererLine.transform);
-                var p = new Vector2[timeline.Timeline.Count];
+                var p = new Vector2[timeline.Timeline.Length];
                 int i = 0;
                 foreach (var collapse in timeline.Timeline)
                 {
-                    var v = _views.Find(e => e.Content == collapse).transform;
+                    var v = Views.Find(e => e.Content == collapse).transform;
                     Vector2 canvasStart = RectTransformUtility.WorldToScreenPoint(Camera.main, v.position);
                     p[i++] = canvasStart;
-                    if (collapse.Branches != null && collapse.Branches.Count > 0)
+                    if (collapse.Branches != null && collapse.Branches.Length > 0)
                     {
                         var l2 = Instantiate(rendererLine, rendererLine.transform);
-                        var p2 = new Vector2[collapse.Branches.Count+1];
+                        var p2 = new Vector2[collapse.Branches.Length + 1];
                         p2[0] = canvasStart;
                         int i2 = 1;
                         foreach (var branch in collapse.Branches)
                         {
-                            var v2 = _views.Find(e => e.Content == branch).transform;
+                            var v2 = Views.Find(e => e.Content == branch).transform;
                             Vector2 canvasStart2 = RectTransformUtility.WorldToScreenPoint(Camera.main, v2.position);
                             p2[i2++] = canvasStart2;
                         }

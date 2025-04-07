@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7579bea6ef1428d9a774693df05fc9a, type: 3}
+  m_Name: TimelineData
+  m_EditorClassIdentifier: 
+  <Timelines>k__BackingField:
+  - {fileID: 11400000, guid: 535033926d727164eab6033b73eb02c8, type: 2}
+  - {fileID: 11400000, guid: 84b271e9f1b4e5e458499152cae9cb66, type: 2}
+  - {fileID: 11400000, guid: 8adfa9643bc1156489c32b9219a7fdd6, type: 2}
+  <Ages>k__BackingField:
+  - {fileID: 11400000, guid: 6bcf5668a54cbbc4d96c58e157969107, type: 2}
+  - {fileID: 11400000, guid: f13d5e74329753b4da7e8befb6e06b54, type: 2}
+  - {fileID: 11400000, guid: c9afd098e12c1a54dbdac6a43a604246, type: 2}
+  - {fileID: 11400000, guid: 3181ecb83b32d014d92cf987a9595b0f, type: 2}
+  <AllCollapse>k__BackingField: {fileID: 11400000, guid: 0896a296c439fdb49b5523f02825014d, type: 2}

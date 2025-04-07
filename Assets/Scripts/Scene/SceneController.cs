@@ -2,11 +2,11 @@
 
 namespace CodeScripts.Scene
 {
-    public static class SceneController
+    public class SceneController
     {
-        private static int ThisIdScene => SceneManager.GetActiveScene().buildIndex;
-        public static void SetScene(int idScene) => SceneManager.LoadScene(idScene);
-        public static void SetScene(string nameScene) => SceneManager.LoadScene(nameScene);
-        public static void ResetScene() => SetScene(ThisIdScene);
+        private  int ThisIdScene => SceneManager.GetActiveScene().buildIndex;
+        public  void SetScene(int idScene) => SceneManager.LoadScene(idScene);
+        public  void SetScene(string nameScene) => SceneManager.LoadScene(nameScene);
+        public  void ResetScene() => SetScene(ThisIdScene);
     }
 }

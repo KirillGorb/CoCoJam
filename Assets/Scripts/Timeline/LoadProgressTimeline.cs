@@ -1,6 +1,10 @@
-﻿using CodeScripts.SaveLoadSystem;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CodeScripts.SaveLoadSystem;
 using CodeScripts.Timeline.Model;
-using UnityEngine;
+using ModestTree;
+using Sirenix.Utilities;
+using UniRx;
 using Zenject;
 
 namespace CodeScripts.Timeline
@@ -8,48 +12,95 @@ namespace CodeScripts.Timeline
     public class TimelineSD : ISaveData
     {
         public int IdOpenCollapse;
-        public ECollapseMode[] AllCollapseMode;
+        public List<ECollapseMode> AllCollapseMode;
     }
 
     public class LoadProgressTimeline : IInitializable
     {
-        [Inject] private readonly GraphModel _model;
+        [Inject] private readonly TimelineData _data;
         [Inject] private readonly Save<TimelineSD> _saver;
 
-        private TimelineSD _data;
-        
+        private readonly CompositeDisposable _disposable = new();
+
+        public TimelineSD Load { get; private set; }
+
         public void Initialize()
         {
-            Debug.Log(11);
-            _model.AllCollapse.LoadID();
+            var con = _data.AllCollapse.Containers;
+            Load = _saver.LoadData();
 
-            _data = _saver.LoadData();
-            if (_data?.AllCollapseMode is null)
+            if (Load?.AllCollapseMode is null)
             {
-                var allCollapseMode = new ECollapseMode[_model.AllCollapse.Containers.Count];
-
-                allCollapseMode[0] = ECollapseMode.Active;
-                for (var i = 1; i < allCollapseMode.Length; i++)
-                    allCollapseMode[i] = ECollapseMode.Inactive;
-
-                _data = new TimelineSD()
+                Load = new TimelineSD
                 {
                     IdOpenCollapse = 0,
-                    AllCollapseMode = allCollapseMode
+                    AllCollapseMode = con.Select(e => e.Mode.Value).ToList()
                 };
-                _saver.SaveData(_data);
+
+                Sub();
+                con[0].Mode.Value = ECollapseMode.Active;
+                for (var i = 1; i < con.Length; i++)
+                    con[i].Mode.Value = ECollapseMode.Inactive;
+
+                _saver.SaveData(Load);
             }
+            else
+            {
+                Sub();
+                int i = 0;
+                foreach (var mode in Load.AllCollapseMode)
+                    con[i++].Mode.Value = mode;
+            }
+        }
+
+        private void Sub()
+        {
+            int ik = 0;
+            foreach (var collapse in _data.AllCollapse.Containers)
+            {
+                var ij = ik;
+                collapse.ID = ik;
+                collapse.Mode.Subscribe(e => Load.AllCollapseMode[ij] = e).AddTo(_disposable);
+                ik++;
+            }
+        }
+
+        public void SetID(CollapseModel collapse)
+        {
+            Load.IdOpenCollapse = collapse.ID;
+            _saver.SaveData(Load);
         }
 
         public void Next()
         {
-            var i = _data.IdOpenCollapse;
-            _data.AllCollapseMode[i] = ECollapseMode.End;
-            _model.Find(i).Next.ForEach(e =>
-                _data.AllCollapseMode[e.ID] =
-                    _data.AllCollapseMode[e.ID] != ECollapseMode.End ? ECollapseMode.Active : ECollapseMode.End);
+            var i = Load.IdOpenCollapse;
+            var c = _data.AllCollapse.Containers[i];
 
-            _saver.SaveData(_data);
+            c.SetActiveModeOnBranch();
+
+            _data.Timelines.Select(e =>
+            {
+                if (e.Timeline.Contains(c))
+                    return (e.Timeline, e.Timeline.IndexOf(c));
+                return default;
+            }).ForEach(e =>
+            {
+                if (e.Item1 != null && e.Item2 + 1 < e.Item1.Length &&
+                    e.Item1[e.Item2 + 1].Mode.Value is not (ECollapseMode.Ends or ECollapseMode.Cansel))
+                {
+                    e.Item1[e.Item2 + 1].Mode.Value = ECollapseMode.Active;
+                }
+            });
+
+            var a = _data.GetAgeId(c);
+            if (a > 0)
+                for (int j = 0; j < a; j++)
+                    foreach (var age in _data.Ages[j].Ages)
+                        if (age.Mode.Value is not (ECollapseMode.Ends or ECollapseMode.Cansel))
+                            age.Mode.Value = ECollapseMode.Rollback;
+
+            _data.AllCollapse.Containers[i].Mode.Value = ECollapseMode.Ends;
+            _saver.SaveData(Load);
         }
     }
 }
