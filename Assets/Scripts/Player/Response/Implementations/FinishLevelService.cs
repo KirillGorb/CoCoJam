@@ -2,6 +2,7 @@
 using CodeScripts.Abstraction;
 using CodeScripts.PlayerInteraction;
 using CodeScripts.PlayerResponse.Implementations.Abstraction;
+using CodeScripts.Scene;
 using CodeScripts.Timeline;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -27,6 +28,7 @@ namespace CodeScripts.PlayerResponse.Implementations
 
         [Inject] private TagResponseSwitcher _switcher;
         [Inject] private LoadProgressTimeline _timeline;
+        [Inject] private SceneController _scene;
 
         public void Initialize()
         {
@@ -37,7 +39,7 @@ namespace CodeScripts.PlayerResponse.Implementations
         {
             Debug.Log(Finish);
             _timeline.Next();
-            SceneManager.LoadScene(0);
+            _scene.SetScene(0);
             return UniTask.CompletedTask;
         }
 

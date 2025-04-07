@@ -229,6 +229,34 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""Controll"",
+            ""id"": ""a6df6c50-c555-45f9-84c4-bd77c839bd92"",
+            ""actions"": [
+                {
+                    ""name"": ""Rallback"",
+                    ""type"": ""Value"",
+                    ""id"": ""2ad5b4ce-51d6-4d76-9119-a308e6e87d54"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""cbb67062-6ed8-480d-acd0-c95d39f91311"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rallback"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -263,6 +291,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Movement_SharpDescent = m_Movement.FindAction("SharpDescent", throwIfNotFound: true);
         m_Movement_PuckUp = m_Movement.FindAction("PuckUp", throwIfNotFound: true);
         m_Movement_Rotate = m_Movement.FindAction("Rotate", throwIfNotFound: true);
+        // Controll
+        m_Controll = asset.FindActionMap("Controll", throwIfNotFound: true);
+        m_Controll_Rallback = m_Controll.FindAction("Rallback", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -398,6 +429,52 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         }
     }
     public MovementActions @Movement => new MovementActions(this);
+
+    // Controll
+    private readonly InputActionMap m_Controll;
+    private List<IControllActions> m_ControllActionsCallbackInterfaces = new List<IControllActions>();
+    private readonly InputAction m_Controll_Rallback;
+    public struct ControllActions
+    {
+        private @PlayerInput m_Wrapper;
+        public ControllActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Rallback => m_Wrapper.m_Controll_Rallback;
+        public InputActionMap Get() { return m_Wrapper.m_Controll; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ControllActions set) { return set.Get(); }
+        public void AddCallbacks(IControllActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ControllActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ControllActionsCallbackInterfaces.Add(instance);
+            @Rallback.started += instance.OnRallback;
+            @Rallback.performed += instance.OnRallback;
+            @Rallback.canceled += instance.OnRallback;
+        }
+
+        private void UnregisterCallbacks(IControllActions instance)
+        {
+            @Rallback.started -= instance.OnRallback;
+            @Rallback.performed -= instance.OnRallback;
+            @Rallback.canceled -= instance.OnRallback;
+        }
+
+        public void RemoveCallbacks(IControllActions instance)
+        {
+            if (m_Wrapper.m_ControllActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IControllActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ControllActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ControllActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public ControllActions @Controll => new ControllActions(this);
     private int m_keyboardSchemeIndex = -1;
     public InputControlScheme keyboardScheme
     {
@@ -423,5 +500,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnSharpDescent(InputAction.CallbackContext context);
         void OnPuckUp(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+    }
+    public interface IControllActions
+    {
+        void OnRallback(InputAction.CallbackContext context);
     }
 }

@@ -207,6 +207,34 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "Controll",
+            "id": "a6df6c50-c555-45f9-84c4-bd77c839bd92",
+            "actions": [
+                {
+                    "name": "Rallback",
+                    "type": "Value",
+                    "id": "2ad5b4ce-51d6-4d76-9119-a308e6e87d54",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "cbb67062-6ed8-480d-acd0-c95d39f91311",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rallback",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

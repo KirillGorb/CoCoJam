@@ -1,3 +1,4 @@
+using UniRx;
 using UnityEngine;
 
 namespace CodeScripts.PlayerInputs
@@ -13,6 +14,8 @@ namespace CodeScripts.PlayerInputs
         public static bool SharpDescentInput { get; private set; }
         public static bool PuckUpInput { get; private set; }
         public static bool SedInput { get; private set; }
+        
+        public readonly static BoolReactiveProperty Rallback = new();
 
         private void Awake()
         {
@@ -43,6 +46,10 @@ namespace CodeScripts.PlayerInputs
 
             _input.Movement.Rotate.performed += e => RotateInput = e.ReadValue<float>();
             _input.Movement.Rotate.canceled += _ => RotateInput = 0;
+
+
+            _input.Controll.Rallback.performed += _ => Rallback.Value = true;
+            _input.Controll.Rallback.canceled += _ => Rallback.Value = false;
         }
 
         private void OnDisable()

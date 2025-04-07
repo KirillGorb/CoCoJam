@@ -1,9 +1,10 @@
 {
-    "name": "CodeScripts.PlayerInputs",
-    "rootNamespace": "CodeScripts.PlayerInputs",
+    "name": "CodeScripts.Inputs",
+    "rootNamespace": "CodeScripts.Inputs",
     "references": [
         "GUID:1aa1babf59a129d4d90f564d30e52699",
-        "GUID:75469ad4d38634e559750d17036d5f7c"
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

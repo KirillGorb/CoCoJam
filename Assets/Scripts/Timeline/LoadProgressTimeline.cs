@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using CodeScripts.PlayerInputs;
 using CodeScripts.SaveLoadSystem;
+using CodeScripts.Scene;
 using CodeScripts.Timeline.Model;
 using ModestTree;
 using Sirenix.Utilities;
@@ -15,9 +18,10 @@ namespace CodeScripts.Timeline
         public List<ECollapseMode> AllCollapseMode;
     }
 
-    public class LoadProgressTimeline : IInitializable
+    public class LoadProgressTimeline : IInitializable, IDisposable
     {
         [Inject] private readonly TimelineData _data;
+        [Inject] private readonly SceneController _sceneManager;
         [Inject] private readonly Save<TimelineSD> _saver;
 
         private readonly CompositeDisposable _disposable = new();
@@ -46,11 +50,18 @@ namespace CodeScripts.Timeline
             }
             else
             {
-                Sub();
                 int i = 0;
                 foreach (var mode in Load.AllCollapseMode)
                     con[i++].Mode.Value = mode;
+                Sub();
             }
+            
+            InputCallback.Rallback.Where(e=> e).Subscribe(_ =>
+            {
+                Load.AllCollapseMode[Load.IdOpenCollapse] = ECollapseMode.Cansel;
+                _saver.SaveData(Load);
+                _sceneManager.SetScene(0);
+            }).AddTo(_disposable);
         }
 
         private void Sub()
@@ -101,6 +112,11 @@ namespace CodeScripts.Timeline
 
             _data.AllCollapse.Containers[i].Mode.Value = ECollapseMode.Ends;
             _saver.SaveData(Load);
+        }
+
+        public void Dispose()
+        {
+            _disposable?.Dispose();
         }
     }
 }
