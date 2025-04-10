@@ -67,7 +67,6 @@ namespace CodeScripts.PlayerInteraction
             var tPosX = _target.position;
 
             int lookDirection = _rd.position.x < tPosX.x ? 1 : -1;
-            float moveDirection = _rd.velocity.x;
 
             var targetPosition = new Vector2(_rd.position.x +_config.MaxDist* lookDirection, _target.position.y - _config.Gravity);
 

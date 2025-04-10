@@ -91,15 +91,17 @@ namespace CodeScripts.Player
         private void BindAndConfigureCollisionResponseSwitcherService()
         {
             Container.Bind<DataSwitcher>().FromNew().AsSingle();
+            Container.Bind<ComponentResponseSwitcher>().FromNew().AsSingle();
             Container.Bind<LayerResponseSwitcher>().FromNew().AsSingle();
             Container.Bind<TagResponseSwitcher>().FromNew().AsSingle();
 
-            Container.BindInterfacesAndSelfTo<DataKill>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<FinishLevelService>().FromNew().AsSingle();
+            Container.BindInterfacesAndSelfTo<KeyService>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<KillPlayerService>().FromNew().AsSingle();
-
-            Container.BindInterfacesAndSelfTo<DataUpJump>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<UpJumpPlayerService>().FromNew().AsSingle();
+
+            Container.BindInterfacesAndSelfTo<DataKill>().FromNew().AsSingle();
+            Container.BindInterfacesAndSelfTo<DataUpJump>().FromNew().AsSingle();
         }
     }
 }

@@ -14,4 +14,7 @@ namespace CodeScripts.PlayerMove.State.Datas
     { }
     public struct NoMoveData : IData
     { }
+    
+    public struct NullData : IData
+    { }
 }

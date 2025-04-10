@@ -8,11 +8,6 @@ using UniRx;
 
 namespace CodeScripts.PlayerResponse
 {
-    public sealed class DataSwitcher
-    {
-        public readonly Dictionary<object, IData> Container = new();
-    }
-
     public abstract class CollisionResponseSwitcher<T> : IDisposable
     {
         private readonly CompositeDisposable _disposables = new();
@@ -25,10 +20,11 @@ namespace CodeScripts.PlayerResponse
                 .Subscribe(e =>
                 {
                     var v = KeyCollider(e.Value);
-                    if (dataSwitcher.Container.TryGetValue(v, out var data))
-                        Use(v, data);
-                    else
-                        Use<IData>(v, null);
+                    if (v != null)
+                        if (dataSwitcher.Container.TryGetValue(v, out var data))
+                            Use(v, data);
+                        else
+                            Use<IData>(v, null);
                 }).AddTo(_disposables);
 
             playerCollisionDetector.IncomingColliders
@@ -36,10 +32,11 @@ namespace CodeScripts.PlayerResponse
                 .Subscribe(e =>
                 {
                     var v = KeyCollider(e.Value);
-                    if (dataSwitcher.Container.TryGetValue(v, out var data))
-                        StopUse(v, data);
-                    else
-                        StopUse<IData>(v, null);
+                    if (v != null)
+                        if (dataSwitcher.Container.TryGetValue(v, out var data))
+                            StopUse(v, data);
+                        else
+                            StopUse<IData>(v, null);
                 }).AddTo(_disposables);
 
 
@@ -48,10 +45,11 @@ namespace CodeScripts.PlayerResponse
                 .Subscribe(e =>
                 {
                     var v = KeyCollision(e.Value);
-                    if (dataSwitcher.Container.TryGetValue(v, out var data))
-                        Use(v, data);
-                    else
-                        Use<IData>(v, null);
+                    if (v != null)
+                        if (dataSwitcher.Container.TryGetValue(v, out var data))
+                            Use(v, data);
+                        else
+                            Use<IData>(v, null);
                 }).AddTo(_disposables);
 
             playerCollisionDetector.IncomingCollisions
@@ -59,10 +57,11 @@ namespace CodeScripts.PlayerResponse
                 .Subscribe(e =>
                 {
                     var v = KeyCollision(e.Value);
-                    if (dataSwitcher.Container.TryGetValue(v, out var data))
-                        StopUse(v, data);
-                    else
-                        StopUse<IData>(v, null);
+                    if (v != null)
+                        if (dataSwitcher.Container.TryGetValue(v, out var data))
+                            StopUse(v, data);
+                        else
+                            StopUse<IData>(v, null);
                 }).AddTo(_disposables);
         }
 

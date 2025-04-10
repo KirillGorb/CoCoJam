@@ -1,28 +1,15 @@
 ﻿using System;
 using System.Threading;
 using CodeScripts.Abstraction;
-using CodeScripts.PlayerInteraction;
 using CodeScripts.PlayerMove;
 using CodeScripts.PlayerMove.State.Datas;
 using CodeScripts.PlayerResponse.Implementations.Abstraction;
 using CodeScripts.Respawn;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 using Zenject;
 
 namespace CodeScripts.PlayerResponse.Implementations
 {
-    public sealed class LayerResponseSwitcher : CollisionResponseSwitcher<LayerMask>
-    {
-        public LayerResponseSwitcher(PlayerCollisionDetector playerCollisionDetector, DataSwitcher dataSwitcher) : base(
-            playerCollisionDetector, dataSwitcher)
-        {
-        }
-
-        public override LayerMask KeyCollider(Collider2D content) => content.gameObject.layer;
-        public override LayerMask KeyCollision(Collision2D content) => content.gameObject.layer;
-    }
-
     public class KillPlayerService : IPlayerResponseService, IInitializable
     {
         [Inject] private RespawnController _respawnController;
@@ -52,18 +39,6 @@ namespace CodeScripts.PlayerResponse.Implementations
         {
             _cancellationTokenSource.Cancel();
             return UniTask.CompletedTask;
-        }
-    }
-
-    public class DataKill : IData, IInitializable
-    {
-        public float KillTime = 0.5f;
-
-        [Inject] private DataSwitcher _dataSwitcher;
-
-        public void Initialize()
-        {
-            _dataSwitcher.Container.Add(13, this);
         }
     }
 }

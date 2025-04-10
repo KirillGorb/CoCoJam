@@ -23,7 +23,7 @@ MonoBehaviour:
     countDopJump: -1
     groundLayerMask:
       serializedVersion: 2
-      m_Bits: 4352
+      m_Bits: 136
     groundCheckRadius: 0.1
     groundCheckOffset: {x: 0, y: 0.14}
     gravityScale: 1.4

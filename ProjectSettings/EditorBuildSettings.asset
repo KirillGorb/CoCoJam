@@ -11,4 +11,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/TemplateScene.unity
     guid: 47aa8d22e1e1cc34c82ec5da03bbca2c
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: ef4b8f3841829ce4987c82adbe23d480, type: 2}

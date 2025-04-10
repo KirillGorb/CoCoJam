@@ -18,6 +18,6 @@ MonoBehaviour:
   <MaxDistUpCheck>k__BackingField: 10
   <LayerCheck>k__BackingField:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
   <Speed>k__BackingField: 1
   <Duration>k__BackingField: 1

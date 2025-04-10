@@ -5,15 +5,16 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Key
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Drag
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Ground
   - 
   - 
   - 

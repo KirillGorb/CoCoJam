@@ -22,9 +22,10 @@ namespace CodeScripts.Timeline.View
 
             var c = Instantiate(collapse, transform);
             c.Content = model;
-            model.Mode.Subscribe(e => c.SetView(e)).AddTo(disposable);
+            model.Data.Subscribe(e => c.SetView(e.Mode)).AddTo(disposable);
             c.Open
-                .Where(_ => model.Mode.Value is ECollapseMode.Active or ECollapseMode.Rollback)
+                .Where(_ => model.Data.Value is
+                    { IsActivate: true, Mode: ECollapseMode.Active or ECollapseMode.Rollback })
                 .Subscribe(_ =>
                 {
                     action(model);

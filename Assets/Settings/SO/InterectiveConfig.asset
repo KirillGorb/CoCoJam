@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb1acd98bb25a464d94f912041be4959, type: 3}
   m_Name: InterectiveConfig
   m_EditorClassIdentifier: 
-  <Size>k__BackingField: {x: 1.2, y: 0.35}
+  <Size>k__BackingField: {x: 1.2, y: 0.75}
   <OffSet>k__BackingField: {x: 0, y: 0.33}
   <MaxAngle>k__BackingField: 140
   <MinAngle>k__BackingField: 50
   <InteractiveLayers>k__BackingField:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 8
   <AddSpeedMove>k__BackingField: 2

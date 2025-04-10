@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: MainCollapseModel
   m_EditorClassIdentifier: 
   <ID>k__BackingField: 0
+  <Data>k__BackingField:
+    value:
+      Mode: 0
   <ScenePlay>k__BackingField: TemplateScene
+  <Branches>k__BackingField: []
   modelName: 
   value: 0
   description: 

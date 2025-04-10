@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aff5f4eb66544ef6bb4c339e55e74339, type: 3}
   m_Name: DragDropConfig
   m_EditorClassIdentifier: 
-  AddDist: 2
   MaxDist: 0.8
   Speed: 5
-  Gravity: 0.01
+  Gravity: 0.02

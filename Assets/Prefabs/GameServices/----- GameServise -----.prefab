@@ -80,8 +80,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers: []
   _monoInstallers:
-  - {fileID: 0}
   - {fileID: 1633629303104034063}
+  - {fileID: 0}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -188,3 +188,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: f5fa26d48000b1945be85c56aee16b14, type: 2}
+  key: {fileID: 11400000, guid: c685aec884e963b4eb78e22c99354fbf, type: 2}
