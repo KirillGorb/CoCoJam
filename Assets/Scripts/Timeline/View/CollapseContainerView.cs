@@ -4,6 +4,7 @@ using CodeScripts.Scene;
 using CodeScripts.Timeline.Model;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace CodeScripts.Timeline.View
 {
@@ -13,14 +14,15 @@ namespace CodeScripts.Timeline.View
 
         private readonly List<CollapseModel> _repeats = new();
 
-        public CollapseView Spawn(CollapseModel model, SceneController scene, Action<CollapseModel> action,
+        public CollapseView Spawn(DiContainer container, CollapseModel model, SceneController scene,
+            Action<CollapseModel> action,
             CompositeDisposable disposable)
         {
             if (_repeats.Contains(model))
                 return null;
             _repeats.Add(model);
 
-            var c = Instantiate(collapse, transform);
+            var c = container.InstantiatePrefab(collapse, transform).GetComponent<CollapseView>();
             c.Content = model;
             model.Data.Subscribe(e => c.SetView(e.Mode)).AddTo(disposable);
             c.Open

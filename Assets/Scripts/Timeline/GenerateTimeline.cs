@@ -17,13 +17,13 @@ namespace CodeScripts.Timeline
         [SerializeField] private Vector2 offset;
         [SerializeField] private float step;
 
-        [Space] 
-        [SerializeField] private UILineRenderer rendererLine;
+        [Space] [SerializeField] private UILineRenderer rendererLine;
         [SerializeField] private Transform lineContainer;
 
         [Inject] private readonly TimelineData _data;
         [Inject] private readonly SceneController _sceneController;
         [Inject] private readonly LoadProgressTimeline _loadProgressTimeline;
+        [Inject] private readonly DiContainer _container;
 
         private readonly CompositeDisposable _disposables = new();
 
@@ -48,7 +48,8 @@ namespace CodeScripts.Timeline
                 c.transform.position = offset + (i++) * Vector2.right * step;
                 foreach (var collapse in age.Ages)
                 {
-                    var v = c.Spawn(collapse, _sceneController, e => _loadProgressTimeline.SetID(e), _disposables);
+                    var v = c.Spawn(_container, collapse, _sceneController,
+                        e => _loadProgressTimeline.SetID(e), _disposables);
                     if (v is not null)
                         Views.Add(v);
                 }
