@@ -1,9 +1,10 @@
 ﻿using System.IO;
+using CodeScripts.Abstraction;
 using UnityEngine;
 
 namespace CodeScripts.SaveLoadSystem
 {
-    public class Save<T> where T : ISaveData
+    public class Save<T> where T : IData
     {
         private readonly string _filePath;
 

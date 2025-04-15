@@ -24,7 +24,7 @@ namespace CodeScripts.Timeline.View
 
             var c = container.InstantiatePrefab(collapse, transform).GetComponent<CollapseView>();
             c.Content = model;
-            model.Data.Subscribe(e => c.SetView(e.Mode)).AddTo(disposable);
+            model.Data.Where(e=> e.IsActivate).Subscribe(e => c.SetView(e.Mode)).AddTo(disposable);
             c.Open
                 .Where(_ => model.Data.Value is
                     { IsActivate: true, Mode: ECollapseMode.Active or ECollapseMode.Rollback })

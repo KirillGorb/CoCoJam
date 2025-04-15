@@ -1,7 +1,9 @@
 {
     "name": "CodeScripts.SaveLoadSystem",
     "rootNamespace": "CodeScripts.SaveLoadSystem",
-    "references": [],
+    "references": [
+        "GUID:78aabe4c7bf7ff047a0323f93959a85f"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
