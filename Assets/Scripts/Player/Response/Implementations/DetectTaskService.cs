@@ -30,7 +30,7 @@ namespace CodeScripts.PlayerResponse.Implementations
                 {
                     e.ID = i;
                     _load.UsesTask
-                        .Where(t => t.id == i)
+                        .WhereU(t => t.id == i)
                         .Subscribe(t => e.gameObject.SetActive(!t.status))
                         .AddTo(_disposable);
                 })

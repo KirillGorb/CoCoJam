@@ -1,101 +1,56 @@
-﻿using System.Collections.Generic;
-using CodeScripts.Scene;
-using CodeScripts.Timeline.Model;
-using CodeScripts.Timeline.View;
-using Cysharp.Threading.Tasks;
-using Plugins.Other;
-using UniRx;
+﻿using CodeScripts.Timeline.Model;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
+using CodeScripts.Scene;
+using UniRx;
 
 namespace CodeScripts.Timeline
 {
     public class GenerateTimeline : MonoBehaviour
     {
-        [SerializeField] private CollapseContainerView containerView;
-        [SerializeField] private Transform container;
-        [SerializeField] private Vector2 offset;
-        [SerializeField] private float step;
-
-        [Space] [SerializeField] private UILineRenderer rendererLine;
-        [SerializeField] private Transform lineContainer;
+        [SerializeField] private MapItemView[] map;
+        [SerializeField] private Scrollbar scroll;
 
         [Inject] private readonly TimelineData _data;
-        [Inject] private readonly SceneController _sceneController;
         [Inject] private readonly LoadProgressTimeline _loadProgressTimeline;
-        [Inject] private readonly DiContainer _container;
+        [Inject] private readonly SceneController _scene;
 
-        private readonly CompositeDisposable _disposables = new();
-
-        public readonly List<CollapseView> Views = new();
-
-        private void Awake()
-        {
-            SpawnCollapse();
-        }
+        private int _ageLoad;
 
         private void Start()
         {
-            SpawnLine().Forget();
-        }
-
-        private void SpawnCollapse()
-        {
-            int i = 0;
-            foreach (var age in _data.Ages)
+            scroll.onValueChanged.AddListener(e =>
             {
-                var c = Instantiate(containerView, container);
-                c.transform.position = offset + (i++) * Vector2.right * step;
-                foreach (var collapse in age.Ages)
-                {
-                    var v = c.Spawn(_container, collapse, _sceneController,
-                        e => _loadProgressTimeline.SetID(e), _disposables);
-                    if (v is not null)
-                        Views.Add(v);
-                }
-            }
-        }
+                var old = _ageLoad;
+                _ageLoad = Mathf.FloorToInt(e * (_data.Ages.Length - 1));
+                Debug.Log($"Selected Age Index: {_ageLoad}");
 
-        private async UniTaskVoid SpawnLine()
-        {
-            await UniTask.DelayFrame(1);
+                if (_ageLoad != old) Render();
+            });
 
-            foreach (var timeline in _data.Timelines)
+            foreach (var item in map)
             {
-                var l = Instantiate(rendererLine, rendererLine.transform);
-                var p = new Vector2[timeline.Timeline.Length];
-                int i = 0;
-                foreach (var collapse in timeline.Timeline)
-                {
-                    var v = Views.Find(e => e.Content == collapse).transform;
-                    Vector2 canvasStart = RectTransformUtility.WorldToScreenPoint(Camera.main, v.position);
-                    p[i++] = canvasStart;
-                    if (collapse.Branches != null && collapse.Branches.Length > 0)
+                item.AgeFind += () => _ageLoad;
+                
+                item.Open
+                    .WhereU(_ => item.InAge(out var c) && 
+                                 c.Data.Value is { IsActivate: true, Mode: ECollapseMode.Active or ECollapseMode.Rollback })
+                    .Subscribe(_ =>
                     {
-                        var l2 = Instantiate(rendererLine, rendererLine.transform);
-                        var p2 = new Vector2[collapse.Branches.Length + 1];
-                        p2[0] = canvasStart;
-                        int i2 = 1;
-                        foreach (var branch in collapse.Branches)
-                        {
-                            var v2 = Views.Find(e => e.Content == branch).transform;
-                            Vector2 canvasStart2 = RectTransformUtility.WorldToScreenPoint(Camera.main, v2.position);
-                            p2[i2++] = canvasStart2;
-                        }
-
-                        l2.points = p2;
-                        l2.transform.SetParent(lineContainer);
-                    }
-                }
-
-                l.points = p;
-                l.transform.SetParent(lineContainer);
+                        item.InAge(out var col);
+                        _loadProgressTimeline.SetID(col);
+                        _scene.SetScene(col.ScenePlay);
+                        _scene.SetScene(col.ScenePlay);
+                    }).AddTo(this);
             }
+            Render();
         }
 
-        private void OnDestroy()
+        private void Render()
         {
-            _disposables.Dispose();
+            foreach (var item in map)
+                item.RenderAge();
         }
     }
 }

@@ -29,9 +29,9 @@ namespace CodeScripts.Timeline.View
 
         public void SetData(IData data)
         {
-            if (data is CollapseView view)
+            if (data is MapItemView view && view.InAge(out var col))
             {
-                text.text = view.Content.ScenePlay;
+                text.text = col.ScenePlay;
             }
         }
 

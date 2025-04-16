@@ -94,7 +94,7 @@ namespace CodeScripts.TaskSystem
         private void Sub()
         {
             UsesTask
-                .Where(e => _task.activeTasks.Count > e.id && e.id >= 0)
+                .WhereU(e => _task.activeTasks.Count > e.id && e.id >= 0)
                 .Subscribe(e => _task.allViewTask[e.id] = e)
                 .AddTo(_disposable);
         }

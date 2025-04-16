@@ -28,10 +28,10 @@ namespace UniRx.Examples
             // merge Button click and push enter key on input field.
             var submit = Observable.Merge(
                 AddButton.OnClickAsObservable().Select(_ => ToDoInput.text),
-                ToDoInput.OnEndEditAsObservable().Where(_ => Input.GetKeyDown(KeyCode.Return)));
+                ToDoInput.OnEndEditAsObservable().WhereU(_ => Input.GetKeyDown(KeyCode.Return)));
 
             // add to reactive collection
-            submit.Where(x => x != "")
+            submit.WhereU(x => x != "")
                   .Subscribe(x =>
                   {
                       ToDoInput.text = ""; // clear input field

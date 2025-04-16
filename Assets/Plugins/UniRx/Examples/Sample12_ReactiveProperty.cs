@@ -37,7 +37,7 @@ namespace UniRx.Examples
 #else
             MyInput.OnValueChangeAsObservable()
 #endif
-                .Where(x => x != null)
+                .WhereU(x => x != null)
                 .Delay(TimeSpan.FromSeconds(1))
                 .SubscribeToText(MyText); // SubscribeToText is UniRx.UI Extension Method
 
@@ -47,7 +47,7 @@ namespace UniRx.Examples
 
             // from RxProp, CurrentHp changing(Button Click) is observable
             enemy.CurrentHp.SubscribeToText(MyText);
-            enemy.IsDead.Where(isDead => isDead == true)
+            enemy.IsDead.WhereU(isDead => isDead == true)
                 .Subscribe(_ =>
                 {
                     MyToggle.interactable = MyButton.interactable = false;

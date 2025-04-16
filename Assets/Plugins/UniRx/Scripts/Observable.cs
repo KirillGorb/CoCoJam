@@ -42,7 +42,7 @@ namespace UniRx
             return new SelectObservable<T, TR>(source, selector);
         }
 
-        public static IObservable<T> Where<T>(this IObservable<T> source, Func<T, bool> predicate)
+        public static IObservable<T> WhereU<T>(this IObservable<T> source, Func<T, bool> predicate)
         {
             // optimized path
             var whereObservable = source as UniRx.Operators.WhereObservable<T>;
@@ -60,7 +60,7 @@ namespace UniRx
             return new WhereObservable<T>(source, predicate);
         }
 
-        public static IObservable<T> Where<T>(this IObservable<T> source, Func<T, int, bool> predicate)
+        public static IObservable<T> WhereU<T>(this IObservable<T> source, Func<T, int, bool> predicate)
         {
             return new WhereObservable<T>(source, predicate);
         }

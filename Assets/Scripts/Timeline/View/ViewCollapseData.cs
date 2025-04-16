@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CodeScripts.Timeline.View
 {
     [CreateAssetMenu(fileName = "CollapseData", menuName = "Timeline/CollapseData", order = 0)]
-    public class CollapseData : ScriptableObject
+    public class ViewCollapseData : ScriptableObject
     {
         [field: SerializeField] public Color[] Colors { get; set; }
         [field: SerializeField] public ECollapseMode[] Mode { get; set; }

@@ -132,7 +132,7 @@ namespace CodeScripts.Timeline
 
         private void Subscribe()
         {
-            InputCallback.Rallback.Where(e => e).Subscribe(_ =>
+            InputCallback.Rallback.WhereU(e => e).Subscribe(_ =>
             {
                 _data.AllCollapse.Containers[Load.IdOpenCollapse].IsSetData(ECollapseMode.Cansel, false);
                 _saver.SaveData(Load);

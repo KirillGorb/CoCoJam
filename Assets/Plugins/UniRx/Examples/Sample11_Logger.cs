@@ -21,7 +21,7 @@ namespace UniRx.Examples
             // for example, filter only Exception and upload to web.
             // (make custom sink(IObserver<EventEntry>) is better to use)
             ObservableLogger.Listener
-                .Where(x => x.LogType == LogType.Exception)
+                .WhereU(x => x.LogType == LogType.Exception)
                 .Subscribe(x =>
                 {
                     // ObservableWWW.Post("", null).Subscribe();
