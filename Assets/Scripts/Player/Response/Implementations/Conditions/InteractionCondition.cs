@@ -2,5 +2,6 @@
 {
     public interface InteractionCondition
     {
+        public void Callback();
     }
 }

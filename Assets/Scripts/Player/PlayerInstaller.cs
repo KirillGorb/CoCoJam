@@ -5,6 +5,7 @@ using CodeScripts.PlayerMove.Config;
 using CodeScripts.PlayerMove.State.Logics;
 using CodeScripts.PlayerResponse;
 using CodeScripts.PlayerResponse.Implementations;
+using CodeScripts.PlayerResponse.Player.Response.Implementations.Conditions;
 using CodeScripts.Respawn;
 using UnityEngine;
 using Zenject;
@@ -91,12 +92,15 @@ namespace CodeScripts.Player
         private void BindAndConfigureCollisionResponseSwitcherService()
         {
             Container.Bind<DataSwitcher>().FromNew().AsSingle();
+            Container.Bind<ServiceInteraction>().FromNew().AsSingle();
             Container.Bind<ComponentResponseSwitcher>().FromNew().AsSingle();
             Container.Bind<LayerResponseSwitcher>().FromNew().AsSingle();
             Container.Bind<TagResponseSwitcher>().FromNew().AsSingle();
 
             Container.BindInterfacesAndSelfTo<FinishLevelService>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<KeyService>().FromNew().AsSingle();
+            Container.BindInterfacesAndSelfTo<DetectTaskService>().FromNew().AsSingle();
+            Container.BindInterfacesAndSelfTo<DialogActiveService>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<KillPlayerService>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<UpJumpPlayerService>().FromNew().AsSingle();
 

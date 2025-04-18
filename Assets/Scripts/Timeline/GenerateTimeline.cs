@@ -24,7 +24,6 @@ namespace CodeScripts.Timeline
             {
                 var old = _ageLoad;
                 _ageLoad = Mathf.FloorToInt(e * (_data.Ages.Length - 1));
-                Debug.Log($"Selected Age Index: {_ageLoad}");
 
                 if (_ageLoad != old) Render();
             });

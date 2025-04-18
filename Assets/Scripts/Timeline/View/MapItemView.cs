@@ -3,6 +3,7 @@ using System.Linq;
 using CodeScripts.Abstraction;
 using CodeScripts.Timeline.Model;
 using CodeScripts.Timeline.View;
+using CodeScripts.UI.TooltipSystem;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,7 @@ using Zenject;
 
 namespace CodeScripts.Timeline
 {
-    public class MapItemView : MonoBehaviour, IData
+    public class MapItemView : GuidanceObject, IData
     {
         [SerializeField] private Image view;
         [SerializeField] private Button button;
@@ -26,6 +27,8 @@ namespace CodeScripts.Timeline
 
         public event Func<int> AgeFind;
 
+        public override IData Data => this;
+        
         public void RenderAge()
         {
             if (InAge(out var c))

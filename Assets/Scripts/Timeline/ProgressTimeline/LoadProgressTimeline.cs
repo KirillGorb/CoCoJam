@@ -101,6 +101,8 @@ namespace CodeScripts.Timeline
         private void LoadOnSave()
         {
             var con = _data.AllCollapse.Containers;
+            
+            _saver.SetSave("collapse");
             Load = _saver.LoadData();
 
             if (Load?.AllCollapseMode is null)

@@ -25,10 +25,9 @@ namespace CodeScripts.Dialog
 
         [field: SerializeField] public ModelDialog[] Next { get; private set; }
 
-        [ShowIf(nameof(IsTaskDialog)), SerializeField]
+        [ShowIf("@DialogType == EDialogType.Task"), SerializeField]
         private TaskModel task;
 
-        private bool IsTaskDialog() => DialogType == EDialogType.Task;
 
         public TaskModel Task => task;
     }

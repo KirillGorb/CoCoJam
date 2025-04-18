@@ -7,7 +7,7 @@ namespace Plugins.Other
         public static void ClearChild(this Transform transform)
         {
             foreach (Transform tr in transform)
-                Object.Destroy(tr);
+                Object.Destroy(tr.gameObject);
         }
     }
 }

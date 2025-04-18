@@ -4,6 +4,7 @@ using System.Threading;
 using CodeScripts.Abstraction;
 using CodeScripts.PlayerResponse.Implementations.Abstraction;
 using CodeScripts.PlayerResponse.Implementations.Conditions;
+using CodeScripts.PlayerResponse.Player.Response.Implementations.Conditions;
 using CodeScripts.TaskSystem;
 using Cysharp.Threading.Tasks;
 using Sirenix.Utilities;
@@ -15,17 +16,17 @@ namespace CodeScripts.PlayerResponse.Implementations
 {
     public class DetectTaskService : IPlayerResponseService, IInitializable, IDisposable
     {
-        [Inject] private readonly ComponentResponseSwitcher _switcher;
-        [Inject] private readonly LoadTask _load;
+        [Inject] private readonly ComponentResponseSwitcher _componentResponseSwitcher;
+        [Inject] private readonly LoadTaskSave _load;
 
         private readonly CompositeDisposable _disposable = new();
 
         public void Initialize()
         {
-            _switcher.AddResponse(typeof(DetectParam), this);
+            _componentResponseSwitcher.AddResponse(typeof(TaskApprove), this);
 
             var d = Object
-                .FindObjectsOfType<DetectParam>()
+                .FindObjectsOfType<TaskApprove>()
                 .ForEach((e, i) =>
                 {
                     e.ID = i;
@@ -42,10 +43,11 @@ namespace CodeScripts.PlayerResponse.Implementations
 
         public UniTask Response<T>(T data, CancellationToken token = default) where T : IData
         {
-            if (data is not DetectParam detect)
+            if (data is not ServiceInteraction s)
                 return UniTask.CompletedTask;
-
-            _load.Detect(detect.ParamKey, detect.ID);
+            
+            if (_load.Detect(s.task.ParamKey, s.task.ID))
+                Object.Destroy(s.task.gameObject);
             return UniTask.CompletedTask;
         }
 
@@ -56,7 +58,7 @@ namespace CodeScripts.PlayerResponse.Implementations
 
         public void Dispose()
         {
-            _switcher?.Dispose();
+            _componentResponseSwitcher?.Dispose();
             _disposable?.Dispose();
         }
     }

@@ -1,4 +1,5 @@
-﻿using CodeScripts.Timeline.Model;
+﻿using CodeScripts.PlayerResponse.Player.Response.Implementations.Conditions;
+using CodeScripts.Timeline.Model;
 using UnityEngine;
 using Zenject;
 
@@ -8,12 +9,8 @@ namespace CodeScripts.PlayerResponse.Implementations.Conditions
     {
         [SerializeField] private CollapseModel open;
 
-        [Inject] private readonly DataSwitcher _dataSwitcher;
+        [Inject] private ServiceInteraction _s;
 
-        private void Start()
-        {
-            var key = new DataKey { IdKey = open.ID, KeyGo = gameObject };
-            _dataSwitcher.Container.Add(typeof(KeyObject), key);
-        }
+        public void Callback() => _s.key = new DataKey { IdKey = open.ID, KeyGo = gameObject };
     }
 }

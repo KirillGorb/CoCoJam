@@ -1,39 +1,41 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using CodeScripts.Abstraction;
+using CodeScripts.Dialog.ViewDialog;
 using CodeScripts.PlayerResponse.Implementations.Abstraction;
-using CodeScripts.PlayerResponse.Implementations.Conditions;
 using CodeScripts.PlayerResponse.Player.Response.Implementations.Conditions;
-using CodeScripts.Timeline;
 using Cysharp.Threading.Tasks;
 using Zenject;
-using Object = UnityEngine.Object;
 
 namespace CodeScripts.PlayerResponse.Implementations
 {
-    public class KeyService : IPlayerResponseService, IInitializable
+    public class DialogActiveService : IPlayerResponseService, IInitializable, IDisposable
     {
         [Inject] private readonly ComponentResponseSwitcher _componentResponseSwitcher;
-        [Inject] private readonly LoadProgressTimeline _timeline;
+
+        [Inject] private readonly DialogUIView view;
 
         public void Initialize()
         {
-            _componentResponseSwitcher.AddResponse(typeof(KeyObject), this);
+            _componentResponseSwitcher.AddResponse(typeof(LoadDialog), this);
         }
 
         public UniTask Response<T>(T data, CancellationToken token = default) where T : IData
         {
-            if (data is not ServiceInteraction s) 
+            if (data is not ServiceInteraction s)
                 return UniTask.CompletedTask;
-
-            _timeline.SetActive(s.key.IdKey, true);
-            Object.Destroy(s.key.KeyGo);
-
+            view.Load(s.dialog.Model);
             return UniTask.CompletedTask;
         }
 
         public UniTask StopResponse<T>(T data, CancellationToken token = default) where T : IData
         {
             return UniTask.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            _componentResponseSwitcher?.Dispose();
         }
     }
 }

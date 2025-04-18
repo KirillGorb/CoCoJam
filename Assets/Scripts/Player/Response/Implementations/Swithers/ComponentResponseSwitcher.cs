@@ -15,13 +15,23 @@ namespace CodeScripts.PlayerResponse.Implementations
 
         public override Type KeyCollider(Collider2D content)
         {
-            if (content.gameObject.TryGetComponent(out InteractionCondition i)) return i.GetType();
+            if (content.gameObject.TryGetComponent(out InteractionCondition i))
+            {
+                i.Callback();
+                return i.GetType();
+            }
+
             return null;
         }
 
         public override Type KeyCollision(Collision2D content)
         {
-            if (content.gameObject.TryGetComponent(out InteractionCondition i)) return i.GetType();
+            if (content.gameObject.TryGetComponent(out InteractionCondition i))
+            {
+                i.Callback();
+                return i.GetType();
+            }
+
             return null;
         }
     }
