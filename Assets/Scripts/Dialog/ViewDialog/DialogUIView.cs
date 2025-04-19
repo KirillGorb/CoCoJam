@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using CodeScripts.TaskSystem;
 using Plugins.Other;
 using TMPro;
@@ -16,7 +15,7 @@ namespace CodeScripts.Dialog.ViewDialog
         [SerializeField] private Button next;
         [SerializeField] private Transform container;
 
-        [Inject] private readonly LoadTaskSave taskSave;
+        [Inject] private readonly LoadTaskSave _taskSave;
 
         private readonly CompositeDisposable _disposable = new();
 
@@ -32,7 +31,9 @@ namespace CodeScripts.Dialog.ViewDialog
             text.text = m.Key;
 
             container.ClearChild();
-            foreach (var item in m.Next.Where(e => e.DialogType is EDialogType.Question or EDialogType.Task))
+            foreach (var item in m.Next.Where(e =>
+                         e.DialogType is EDialogType.Question or EDialogType.Task &&
+                         !_taskSave.GetTask().activeTasks.ContainsKey(e.Task.TaskEnd.paramKey)))
                 Spawn(item);
         }
 
@@ -51,12 +52,15 @@ namespace CodeScripts.Dialog.ViewDialog
 
         private void Next(ModelDialog m)
         {
-            if (m.DialogType is EDialogType.Question)
-                Load(m.Next.First());
-            if (m.DialogType is EDialogType.Task)
-                taskSave.AddTask(m.Task);
-
             gameObject.SetActive(false);
+            
+            if (m.DialogType is EDialogType.Question)
+                Load(m);
+            if (m.DialogType is EDialogType.Task)
+            {
+                _taskSave.EndTask.WhereU(e => e == m.Task.TaskEnd.paramKey).Subscribe(k => Load(m.Next.FirstOrDefault(e=> e.DialogType is EDialogType.End && e.Task.TaskEnd.paramKey == k))).AddTo(_disposable);
+                _taskSave.AddTask(m.Task);
+            }
         }
     }
 }

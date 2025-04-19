@@ -44,6 +44,10 @@ namespace CodeScripts.TaskSystem
         private DictionaryTaskSD d_task;
         private TaskSD _task;
 
+        public readonly ReactiveCommand<string> EndTask = new();
+
+        public TaskSD GetTask() => _task ??= d_task.sceneToTasks[_scene.ThisIdScene];
+
         public void Load(TaskStatus[] status)
         {
             _save.SetSave("task");
@@ -87,11 +91,8 @@ namespace CodeScripts.TaskSystem
                         $" ------- {task.TaskEnd.paramKey} ------- {d_task.sceneToTasks[_scene.ThisIdScene].activeTasks[task.TaskEnd.paramKey]} ------- {d_task.sceneToTasks[_scene.ThisIdScene].allViewTask[idDetect]} ------- ");
                     return true;
                 }
-                else
-                {
-                    //_task.activeTasks.Remove(task.TaskEnd.paramKey);
-                    // return _Status_End_;
-                }
+
+                EndTask.Execute(task.TaskEnd.paramKey);
             }
 
             return false;

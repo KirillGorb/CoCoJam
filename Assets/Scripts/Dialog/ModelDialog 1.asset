@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b82927c944b29241a20a81c39045709, type: 3}
-  m_Name: ModelDialog
+  m_Name: ModelDialog 1
   m_EditorClassIdentifier: 
-  <Key>k__BackingField: start
-  <DialogType>k__BackingField: 1
+  <Key>k__BackingField: Up
+  <DialogType>k__BackingField: 3
   <Next>k__BackingField:
-  - {fileID: 11400000, guid: 677d60ac74d7cfc4eafa25c00f08ff5a, type: 2}
-  task: {fileID: 0}
+  - {fileID: 11400000, guid: 53145639f587ef14f82d8445bf42db65, type: 2}
+  task: {fileID: 11400000, guid: 008cb44bb89256e458350862c61d8bbb, type: 2}

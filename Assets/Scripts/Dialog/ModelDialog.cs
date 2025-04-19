@@ -13,6 +13,7 @@ namespace CodeScripts.Dialog
         Question,
         Move,
         Task,
+        End
     }
 
     [CreateAssetMenu(menuName = "DialogSystem/ModelDialog", fileName = "ModelDialog")]
@@ -25,7 +26,7 @@ namespace CodeScripts.Dialog
 
         [field: SerializeField] public ModelDialog[] Next { get; private set; }
 
-        [ShowIf("@DialogType == EDialogType.Task"), SerializeField]
+        [ShowIf("@DialogType == EDialogType.End || DialogType == EDialogType.Task"), SerializeField]
         private TaskModel task;
 
 
