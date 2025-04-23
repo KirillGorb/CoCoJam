@@ -1,12 +1,16 @@
 ﻿using System.IO;
 using UnityEngine;
 using Unity.Plastic.Newtonsoft.Json;
+using UnityEditor;
 
 namespace CodeScripts.SaveLoadSystem
 {
     public class Save<T> where T : class
     {
         private string _filePath;
+
+        [MenuItem("Tools/Delete")]
+        public void Delete() => File.Delete(Application.persistentDataPath);
 
         public void SetSave(string nameFile)
         {

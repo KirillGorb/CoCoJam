@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CodeScripts.Abstraction;
 using CodeScripts.SaveLoadSystem;
 using CodeScripts.Scene;
-using ModestTree;
-using Sirenix.Utilities;
 using UniRx;
-using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace CodeScripts.TaskSystem
@@ -45,6 +40,8 @@ namespace CodeScripts.TaskSystem
         private TaskSD _task;
 
         public readonly ReactiveCommand<string> EndTask = new();
+        public readonly ReactiveCommand<string> AddTaskCheck = new();
+        public readonly ReactiveCommand Delete = new();
 
         public TaskSD GetTask() => _task ??= d_task.sceneToTasks[_scene.ThisIdScene];
 
@@ -74,8 +71,11 @@ namespace CodeScripts.TaskSystem
 
         public void AddTask(TaskModel model)
         {
-            _task.activeTasks[model.TaskEnd.paramKey] = 0;
+            var k = model.TaskEnd.paramKey;
+
+            _task.activeTasks[k] = 0;
             Save();
+            AddTaskCheck.Execute(k);
         }
 
         public bool Detect(TaskModel task, int idDetect)
@@ -87,12 +87,10 @@ namespace CodeScripts.TaskSystem
                     _task.activeTasks[task.TaskEnd.paramKey]++;
                     UsesTask.Execute(new TaskStatus { id = idDetect, status = true });
                     Save();
-                    Debug.Log(
-                        $" ------- {task.TaskEnd.paramKey} ------- {d_task.sceneToTasks[_scene.ThisIdScene].activeTasks[task.TaskEnd.paramKey]} ------- {d_task.sceneToTasks[_scene.ThisIdScene].allViewTask[idDetect]} ------- ");
+                    if (v + 1 >= task.TaskEnd.count)
+                        EndTask.Execute(task.TaskEnd.paramKey);
                     return true;
                 }
-
-                EndTask.Execute(task.TaskEnd.paramKey);
             }
 
             return false;
@@ -108,6 +106,15 @@ namespace CodeScripts.TaskSystem
         private void Save()
         {
             d_task.sceneToTasks[_scene.ThisIdScene] = _task;
+            _save.SaveData(d_task);
+        }
+
+        public void DeleteAll()
+        {
+            _task.activeTasks = new();
+            d_task = new();
+            d_task.sceneToTasks[_scene.ThisIdScene] = _task;
+            Delete.Execute();
             _save.SaveData(d_task);
         }
     }

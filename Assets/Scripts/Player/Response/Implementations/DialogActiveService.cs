@@ -14,7 +14,7 @@ namespace CodeScripts.PlayerResponse.Implementations
         [Inject] private readonly ComponentResponseSwitcher _componentResponseSwitcher;
 
         [Inject] private readonly DialogUIView view;
-
+        
         public void Initialize()
         {
             _componentResponseSwitcher.AddResponse(typeof(LoadDialog), this);
@@ -24,7 +24,7 @@ namespace CodeScripts.PlayerResponse.Implementations
         {
             if (data is not ServiceInteraction s)
                 return UniTask.CompletedTask;
-            view.Load(s.dialog.Model);
+            view.Load(s.dialog.Model, false);
             return UniTask.CompletedTask;
         }
 
