@@ -9,9 +9,11 @@ namespace CodeScripts.Dialog
     public class DialogInstaller : MonoInstaller
     {
         [SerializeField] private DialogUIView viewDialog;
+        [SerializeField] private ContainerDialog containerDialog;
 
         public override void InstallBindings()
         {
+            Container.BindInstance(containerDialog).AsSingle();
             Container.BindInstance(viewDialog).AsSingle();
 
             Container.Bind<LoadTaskSave>().FromNew().AsSingle();

@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CodeScripts.Abstraction;
 using CodeScripts.SaveLoadSystem;
 using CodeScripts.Scene;
+using Sirenix.Utilities;
 using UniRx;
 using Zenject;
 
 namespace CodeScripts.TaskSystem
 {
     [Serializable]
-    public record TaskStatus
-    {
-        public int id;
-        public bool status;
-    }
-
-    [Serializable]
     public record TaskSD : IData
     {
         public Dictionary<string, int> activeTasks;
-        public List<TaskStatus> allViewTask;
+        public List<bool> allViewTask;
+        public List<int> dialogProgress;
     }
 
     [Serializable]
@@ -33,19 +29,21 @@ namespace CodeScripts.TaskSystem
         [Inject] private readonly Save<DictionaryTaskSD> _save;
         [Inject] private readonly SceneController _scene;
 
-        public readonly ReactiveCommand<TaskStatus> UsesTask = new();
         private readonly CompositeDisposable _disposable = new();
 
         private DictionaryTaskSD d_task;
         private TaskSD _task;
 
+        public readonly ReactiveCommand<(int, bool)> UsesTask = new();
         public readonly ReactiveCommand<string> EndTask = new();
         public readonly ReactiveCommand<string> AddTaskCheck = new();
-        public readonly ReactiveCommand Delete = new();
+
+        public int[] LoadDialog { get; set; }
+        public bool[] Activators { get; set; }
 
         public TaskSD GetTask() => _task ??= d_task.sceneToTasks[_scene.ThisIdScene];
 
-        public void Load(TaskStatus[] status)
+        public void Load()
         {
             _save.SetSave("task");
             d_task = _save.LoadData();
@@ -54,16 +52,13 @@ namespace CodeScripts.TaskSystem
             {
                 d_task ??= new();
                 _task = new();
-
-                _task.activeTasks = new();
-                _task.allViewTask = new(status);
+                Delete();
                 Save();
             }
             else
             {
                 if (d_task.sceneToTasks.TryGetValue(_scene.ThisIdScene, out _task))
-                    foreach (var view in _task.allViewTask)
-                        UsesTask.Execute(view);
+                    _task.allViewTask.ForEach((e, i) => UsesTask.Execute((i, e)));
             }
 
             Sub();
@@ -85,7 +80,7 @@ namespace CodeScripts.TaskSystem
                 if (v + 1 <= task.TaskEnd.count)
                 {
                     _task.activeTasks[task.TaskEnd.paramKey]++;
-                    UsesTask.Execute(new TaskStatus { id = idDetect, status = true });
+                    UsesTask.Execute((idDetect, true));
                     Save();
                     if (v + 1 >= task.TaskEnd.count)
                         EndTask.Execute(task.TaskEnd.paramKey);
@@ -96,10 +91,18 @@ namespace CodeScripts.TaskSystem
             return false;
         }
 
+        public int GetDialog(int id) => _task.dialogProgress[id];
+
+        public void SetDialog(int id, int progress)
+        {
+            _task.dialogProgress[id] = progress;
+            Save();
+        }
+
         private void Sub()
         {
             UsesTask
-                .Subscribe(e => _task.allViewTask[e.id] = e)
+                .Subscribe(e => _task.allViewTask[e.Item1] = e.Item2)
                 .AddTo(_disposable);
         }
 
@@ -111,11 +114,17 @@ namespace CodeScripts.TaskSystem
 
         public void DeleteAll()
         {
-            _task.activeTasks = new();
+            Delete();
             d_task = new();
             d_task.sceneToTasks[_scene.ThisIdScene] = _task;
-            Delete.Execute();
             _save.SaveData(d_task);
+        }
+
+        private void Delete()
+        {
+            _task.activeTasks = new();
+            _task.dialogProgress = LoadDialog.ToList();
+            _task.allViewTask = Activators.ToList();
         }
     }
 }

@@ -16,31 +16,29 @@ namespace CodeScripts.Dialog.ViewDialog
         [SerializeField] private Transform container;
 
         [Inject] private readonly LoadTaskSave _taskSave;
+        [Inject] private readonly ContainerDialog _containerDialog;
 
         private readonly CompositeDisposable _disposable = new();
-
-        private ModelDialog _progress;
 
         private void Start()
         {
             gameObject.SetActive(false);
-            _taskSave.Delete.Subscribe(e=> _progress = null).AddTo(_disposable);
         }
 
-        public void Load(ModelDialog m, bool isLoad)
+        public void Load(int idActivator)
         {
-            if (_progress is null || isLoad)
-                _progress = m;
             gameObject.SetActive(true);
+
+            var m = _containerDialog.Dialogs[_taskSave.GetDialog(idActivator)];
 
             text.text = m.Key;
 
             container.ClearChild();
-            foreach (var item in _progress.Next.Where(e =>
+            foreach (var item in m.Next.Where(e =>
                          (e.DialogType is EDialogType.Question or EDialogType.Task &&
                           !_taskSave.GetTask().activeTasks.ContainsKey(e.Task.TaskEnd.paramKey)) ||
                          e.DialogType is EDialogType.End))
-                Spawn(item);
+                Spawn(idActivator, item);
         }
 
         private void OnDestroy()
@@ -48,24 +46,28 @@ namespace CodeScripts.Dialog.ViewDialog
             _disposable.Dispose();
         }
 
-        private void Spawn(ModelDialog m)
+        private void Spawn(int idActivator, ModelDialog m)
         {
             var b = Instantiate(next, container);
             b.gameObject.SetActive(true);
-            b.OnClickAsObservable().Subscribe(_ => Next(m)).AddTo(_disposable);
+            b.OnClickAsObservable().Subscribe(_ => Next(idActivator, m)).AddTo(_disposable);
             b.GetComponentInChildren<TMP_Text>().text = m.Key;
         }
 
-        private void Next(ModelDialog m)
+        private void Next(int idActivator, ModelDialog m)
         {
             gameObject.SetActive(false);
 
             if (m.DialogType is EDialogType.Question)
-                Load(m, true);
+            {
+                _taskSave.SetDialog(idActivator, m .ID);
+                Load(idActivator);
+            }
             if (m.DialogType is EDialogType.Task)
             {
-                _taskSave.EndTask.WhereU(e => e == m.Task.TaskEnd.paramKey).Subscribe(_ => _progress = m)
-                    .AddTo(_disposable); //.Next.FirstOrDefault(e=> e.DialogType is EDialogType.End && e.Task.TaskEnd.paramKey == k)
+                _taskSave.EndTask.WhereU(e => e == m.Task.TaskEnd.paramKey)
+                    .Subscribe(_ => _taskSave.SetDialog(idActivator, m.ID))
+                    .AddTo(_disposable);
                 _taskSave.AddTask(m.Task);
             }
         }

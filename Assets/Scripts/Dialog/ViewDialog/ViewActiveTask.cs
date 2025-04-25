@@ -27,7 +27,7 @@ namespace CodeScripts.Dialog.ViewDialog
         public void Select()
         {
             container.ClearChild();
-            foreach (var (k, v) in  _taskSave.GetTask().activeTasks)
+            foreach (var (k, _) in  _taskSave.GetTask().activeTasks)
             {
                 var t = Instantiate(textView, container);
                 t.gameObject.SetActive(true);

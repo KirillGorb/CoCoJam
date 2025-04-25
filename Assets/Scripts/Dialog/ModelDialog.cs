@@ -19,6 +19,8 @@ namespace CodeScripts.Dialog
     [CreateAssetMenu(menuName = "DialogSystem/ModelDialog", fileName = "ModelDialog")]
     public class ModelDialog : ScriptableObject
     {
+        public int ID { get; set; }
+
         [field: SerializeField] public string Key { get; private set; }
 
         [field: SerializeField, Tooltip("Answer- вопрос, Question- ответ, Move- действие нпс, Task- задание")]

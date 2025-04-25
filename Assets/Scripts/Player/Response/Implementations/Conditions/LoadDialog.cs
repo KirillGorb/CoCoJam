@@ -8,6 +8,8 @@ namespace CodeScripts.Dialog.ViewDialog
 {
     public class LoadDialog : MonoBehaviour, InteractionCondition, IData
     {
+        public int ID {get; set;}
+        
         [field: SerializeField] public ModelDialog Model { get; private set; }
         [Inject] private ServiceInteraction _s;
 
