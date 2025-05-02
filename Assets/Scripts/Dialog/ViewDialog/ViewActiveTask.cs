@@ -13,25 +13,26 @@ namespace CodeScripts.Dialog.ViewDialog
         [SerializeField] private Transform container;
         [SerializeField] private TMP_Text textView;
         [SerializeField] private Button closeButton;
-        
+
         [Inject] private readonly LoadTaskSave _taskSave;
 
         private void Start()
         {
             Select();
 
-            _taskSave.AddTaskCheck.Subscribe(_ => Select()).AddTo(this);
-            closeButton.OnClickAsObservable().Subscribe(_=> _taskSave.DeleteAll()).AddTo(this);
+            _taskSave.TaskCheck.Subscribe(_ => Select()).AddTo(this);
+            closeButton.OnClickAsObservable().Subscribe(_ => _taskSave.DeleteAll()).AddTo(this);
         }
 
         public void Select()
         {
             container.ClearChild();
-            foreach (var (k, _) in  _taskSave.GetTask().activeTasks)
+            foreach (var (k, c) in _taskSave.GetTask().activeTasks)
             {
                 var t = Instantiate(textView, container);
                 t.gameObject.SetActive(true);
                 t.text = k;
+                t.color = c.Item1 > c.Item2 ? Color.green : Color.white;
             }
         }
     }

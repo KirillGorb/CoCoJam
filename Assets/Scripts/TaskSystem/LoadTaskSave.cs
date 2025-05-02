@@ -13,7 +13,7 @@ namespace CodeScripts.TaskSystem
     [Serializable]
     public record TaskSD : IData
     {
-        public Dictionary<string, int> activeTasks;
+        public Dictionary<string, (int, int)> activeTasks;
         public List<bool> allViewTask;
         public List<int> dialogProgress;
     }
@@ -36,7 +36,7 @@ namespace CodeScripts.TaskSystem
 
         public readonly ReactiveCommand<(int, bool)> UsesTask = new();
         public readonly ReactiveCommand<string> EndTask = new();
-        public readonly ReactiveCommand<string> AddTaskCheck = new();
+        public readonly ReactiveCommand TaskCheck = new();
 
         public int[] LoadDialog { get; set; }
         public bool[] Activators { get; set; }
@@ -52,6 +52,7 @@ namespace CodeScripts.TaskSystem
             {
                 d_task ??= new();
                 _task = new();
+                _task.allViewTask = Activators.ToList();
                 Delete();
                 Save();
             }
@@ -66,23 +67,22 @@ namespace CodeScripts.TaskSystem
 
         public void AddTask(TaskModel model)
         {
-            var k = model.TaskEnd.paramKey;
-
-            _task.activeTasks[k] = 0;
+            _task.activeTasks[model.TaskEnd.paramKey] = (0, model.TaskEnd.count);
             Save();
-            AddTaskCheck.Execute(k);
+            TaskCheck.Execute();
         }
 
         public bool Detect(TaskModel task, int idDetect)
         {
             if (_task.activeTasks.TryGetValue(task.TaskEnd.paramKey, out var v))
             {
-                if (v + 1 <= task.TaskEnd.count)
+                if (v.Item1 + 1 <= task.TaskEnd.count)
                 {
-                    _task.activeTasks[task.TaskEnd.paramKey]++;
+                    _task.activeTasks[task.TaskEnd.paramKey] = (v.Item1 + 1, task.TaskEnd.count);
                     UsesTask.Execute((idDetect, true));
                     Save();
-                    if (v + 1 >= task.TaskEnd.count)
+                    TaskCheck.Execute();
+                    if (v.Item1 + 1 >= task.TaskEnd.count)
                         EndTask.Execute(task.TaskEnd.paramKey);
                     return true;
                 }
@@ -118,13 +118,13 @@ namespace CodeScripts.TaskSystem
             d_task = new();
             d_task.sceneToTasks[_scene.ThisIdScene] = _task;
             _save.SaveData(d_task);
+            TaskCheck.Execute();
         }
 
         private void Delete()
         {
             _task.activeTasks = new();
             _task.dialogProgress = LoadDialog.ToList();
-            _task.allViewTask = Activators.ToList();
         }
     }
 }

@@ -16,3 +16,4 @@ MonoBehaviour:
   <DialogType>k__BackingField: 4
   <Next>k__BackingField: []
   task: {fileID: 11400000, guid: 008cb44bb89256e458350862c61d8bbb, type: 2}
+  selectedTypeName: ExampleTask
