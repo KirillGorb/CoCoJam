@@ -54,7 +54,7 @@ namespace CodeScripts.Timeline
 
             var a = _data.GetAgeId(c);
             if (a > 0)
-                for (int j = 0; j < a; j++)
+                for (int j = 0; j <= a; j++)
                     foreach (var age in _data.Ages[j].Ages)
                         age.IsSetData(ECollapseMode.Rollback);
 

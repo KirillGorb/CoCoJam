@@ -5,7 +5,6 @@ using CodeScripts.PlayerMove.Config;
 using CodeScripts.PlayerMove.State.Logics;
 using CodeScripts.PlayerResponse;
 using CodeScripts.PlayerResponse.Implementations;
-using CodeScripts.PlayerResponse.Implementations.Abstraction;
 using CodeScripts.PlayerResponse.Player.Response.Implementations.Conditions;
 using CodeScripts.Respawn;
 using UnityEngine;
