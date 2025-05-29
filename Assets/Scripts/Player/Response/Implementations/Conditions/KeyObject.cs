@@ -15,6 +15,5 @@ namespace CodeScripts.PlayerResponse.Implementations.Conditions
         [Inject] private ServiceInteraction _s;
 
         public void Callback() => _s.key = new DataKey { IdKey = open.ID, KeyGo = gameObject };
-        
     }
 }

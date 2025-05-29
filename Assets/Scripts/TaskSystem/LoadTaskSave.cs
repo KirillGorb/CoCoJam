@@ -43,6 +43,9 @@ namespace CodeScripts.TaskSystem
 
         public TaskSD GetTask() => _task ??= d_task.sceneToTasks[_scene.ThisIdScene];
 
+        public bool IsEndTask(TaskModel e) =>
+            GetTask().activeTasks.TryGetValue(e.TaskEnd.paramKey, out (int v, int e) c) && c.v >= c.e;
+
         public void Load()
         {
             _save.SetSave("task");
@@ -83,7 +86,10 @@ namespace CodeScripts.TaskSystem
                     Save();
                     TaskCheck.Execute();
                     if (v.Item1 + 1 >= task.TaskEnd.count)
-                        EndTask.Execute(task.TaskEnd.paramKey);
+                        if (task.TaskEnd.next is null)
+                            EndTask.Execute(task.TaskEnd.paramKey);
+                        else
+                            AddTask(task.TaskEnd.next);
                     return true;
                 }
             }

@@ -1,0 +1,18 @@
+{
+    "name": "CodeScripts.Skill",
+    "rootNamespace": "CodeScripts.Skill",
+    "references": [
+        "GUID:de4842bdef2bed1489298f1a15a7e930",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

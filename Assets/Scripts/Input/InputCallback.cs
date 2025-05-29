@@ -16,6 +16,7 @@ namespace CodeScripts.PlayerInputs
         public static bool SedInput { get; private set; }
         
         public readonly static BoolReactiveProperty Rallback = new();
+        public readonly static BoolReactiveProperty Skill = new();
 
         private void Awake()
         {

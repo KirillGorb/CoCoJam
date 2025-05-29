@@ -36,8 +36,8 @@ namespace CodeScripts.Dialog.ViewDialog
             container.ClearChild();
             foreach (var item in m.Next.Where(e =>
                          (e.DialogType is EDialogType.Question or EDialogType.Task &&
-                          !_taskSave.GetTask().activeTasks.ContainsKey(e.Task.TaskEnd.paramKey)) ||
-                         e.DialogType is EDialogType.End))
+                          !_taskSave.GetTask().activeTasks.ContainsKey(e.Task.TaskEnd.paramKey))
+                         || (e.DialogType is EDialogType.End && e.Task is null) ||(e.DialogType is EDialogType.End && e.Task is not null && _taskSave.IsEndTask(e.Task))))
                 Spawn(idActivator, item);
         }
 
@@ -57,12 +57,12 @@ namespace CodeScripts.Dialog.ViewDialog
         private void Next(int idActivator, ModelDialog m)
         {
             gameObject.SetActive(false);
-
+            _taskSave.SetDialog(idActivator, m.ID);
             if (m.DialogType is EDialogType.Question)
             {
-                _taskSave.SetDialog(idActivator, m .ID);
                 Load(idActivator);
             }
+
             if (m.DialogType is EDialogType.Task)
             {
                 _taskSave.EndTask.WhereU(e => e == m.Task.TaskEnd.paramKey)

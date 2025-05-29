@@ -1,0 +1,23 @@
+{
+    "name": "CodeScripts.Envir",
+    "rootNamespace": "CodeScripts.Envir",
+    "references": [
+        "GUID:dde0f6b646a8cd2429d919481d4828dc",
+        "GUID:5fc707ad9e519ab4d830ce16819981c7",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:fdbad692d400444b9de9bad892aa1b25",
+        "GUID:78aabe4c7bf7ff047a0323f93959a85f",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

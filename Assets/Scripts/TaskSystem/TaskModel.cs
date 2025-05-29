@@ -9,6 +9,7 @@ namespace CodeScripts.TaskSystem
     {
         public string paramKey;
         public int count;
+        public TaskModel next;
     }
 
     [CreateAssetMenu(menuName = "DialogSystem/TaskModel", fileName = "TaskModel")]
