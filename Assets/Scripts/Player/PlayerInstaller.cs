@@ -7,6 +7,7 @@ using CodeScripts.PlayerResponse;
 using CodeScripts.PlayerResponse.Implementations;
 using CodeScripts.PlayerResponse.Player.Response.Implementations.Conditions;
 using CodeScripts.Respawn;
+using Envir.Platform;
 using UnityEngine;
 using Zenject;
 
@@ -29,6 +30,7 @@ namespace CodeScripts.Player
             BindData();
             BindInstances();
             BindServices();
+            Blocks();
         }
 
         private void BindInstances()
@@ -57,20 +59,27 @@ namespace CodeScripts.Player
         {
             Gizmos.color = Color.green;
             if (_collider is not null)
-                Gizmos.DrawLine(transform.position, transform.position + (Vector3)_angleToCollider.GetMoveVector(_collider, new Vector2(_rd2D.velocity.x, _rd2D.velocity.y)));
+                Gizmos.DrawLine(transform.position,
+                    transform.position + (Vector3)_angleToCollider.GetMoveVector(_collider,
+                        new Vector2(_rd2D.velocity.x, _rd2D.velocity.y)));
 
             Gizmos.color = Color.red;
             Vector3 groundCheckOriginPosition = _rd2D.position + _moveConfig.MoveY.groundCheckOffset;
-            Gizmos.DrawLine(groundCheckOriginPosition + Vector3.right * _moveConfig.MoveY.slopeCheckOffset, groundCheckOriginPosition + Vector3.right * _moveConfig.MoveY.slopeCheckOffset + Vector3.down);
-            Gizmos.DrawLine(groundCheckOriginPosition + Vector3.left * _moveConfig.MoveY.slopeCheckOffset, groundCheckOriginPosition + Vector3.left * _moveConfig.MoveY.slopeCheckOffset + Vector3.down);
+            Gizmos.DrawLine(groundCheckOriginPosition + Vector3.right * _moveConfig.MoveY.slopeCheckOffset,
+                groundCheckOriginPosition + Vector3.right * _moveConfig.MoveY.slopeCheckOffset + Vector3.down);
+            Gizmos.DrawLine(groundCheckOriginPosition + Vector3.left * _moveConfig.MoveY.slopeCheckOffset,
+                groundCheckOriginPosition + Vector3.left * _moveConfig.MoveY.slopeCheckOffset + Vector3.down);
             Gizmos.DrawSphere(groundCheckOriginPosition, _moveConfig.MoveY.groundCheckRadius);
 
             Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(_rd2D.position + Vector2.up * _moveConfig.MoveY.upOffsetHeight, _rd2D.position + Vector2.up * _moveConfig.MoveY.upOffsetHeight + Vector2.right * InputCallback.HorizontalInput * _moveConfig.MoveY.ledgeCheckDistance);
-            Gizmos.DrawLine(groundCheckOriginPosition, groundCheckOriginPosition + Vector3.up * _moveConfig.MoveY.ledgeHeight);
-            
+            Gizmos.DrawLine(_rd2D.position + Vector2.up * _moveConfig.MoveY.upOffsetHeight,
+                _rd2D.position + Vector2.up * _moveConfig.MoveY.upOffsetHeight + Vector2.right *
+                InputCallback.HorizontalInput * _moveConfig.MoveY.ledgeCheckDistance);
+            Gizmos.DrawLine(groundCheckOriginPosition,
+                groundCheckOriginPosition + Vector3.up * _moveConfig.MoveY.ledgeHeight);
+
             Gizmos.color = Color.blue;
-            Gizmos.DrawCube(_rd2D.position +  _interectiveConfig.OffSet, _interectiveConfig.Size);
+            Gizmos.DrawCube(_rd2D.position + _interectiveConfig.OffSet, _interectiveConfig.Size);
         }
 
         private void BindServices()
@@ -106,6 +115,11 @@ namespace CodeScripts.Player
 
             Container.BindInterfacesAndSelfTo<DataKill>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<DataUpJump>().FromNew().AsSingle();
+        }
+
+        private void Blocks()
+        {
+            Container.Bind<PlatformContainer>().AsSingle();
         }
     }
 }

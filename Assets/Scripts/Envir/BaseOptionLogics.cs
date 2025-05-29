@@ -13,17 +13,18 @@ namespace CodeScripts.Envir.Envir
         private IState _current;
         private int _id;
 
-     //   [Inject] private PlatformContainer _platform;
+        [Inject] private PlatformContainer _platform;
 
         private void Start()
         {
             foreach (var state in statesQueue)
             {
                 state.IsNext.WhereU(e => e).Subscribe(_ => NextState()).AddTo(this);
-     //           _platform.Subscriber(_current);
+                _platform.Subscriber(state);
+                
             }
 
-       //     _platform.AddTo(this);
+            _platform.AddTo(this);
         }
 
         public void NextState()

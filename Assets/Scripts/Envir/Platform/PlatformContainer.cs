@@ -31,11 +31,10 @@ namespace Envir.Platform
     [Serializable]
     public abstract class ILogic
     {
-        [field: SerializeField] public Transform Transform { get; set; }
-        [field: SerializeField] public Transform Target { get; set; }
+        [field: SerializeField] public Collider2D Transform { get; set; }
+        [field: SerializeField] public Collider2D Target { get; set; }
 
-        public EPlatform Type { get; set; }
-
+        public EPlatform platform { get; set; }
         public abstract void Init();
 
         public virtual void Updater()
@@ -65,30 +64,30 @@ namespace Envir.Platform
 
         public void Subscriber(ILogic logic)
         {
-            Observable.EveryFixedUpdate()
-                .WhereU(_ => (logic.Type & EPlatform.UpdaterFixed) == EPlatform.UpdaterFixed)
-                .Subscribe(_ => logic.Updater()).AddTo(_disposable);
+            foreach (EPlatform type in Enum.GetValues(logic.platform.GetType()))
+            {
+                if (type == EPlatform.UpdaterFixed)
+                    Observable.EveryFixedUpdate().Subscribe(_ => logic.Updater()).AddTo(_disposable);
 
-            Observable.EveryUpdate()
-                .WhereU(_ => (logic.Type & EPlatform.Updater) == EPlatform.Updater)
-                .Subscribe(_ => logic.Updater()).AddTo(_disposable);
+                else if (type == EPlatform.Updater)
+                    Observable.EveryUpdate().Subscribe(_ => logic.Updater()).AddTo(_disposable);
 
-            logic.Transform?.OnTriggerStay2DAsObservable()
-                .WhereU(e => (logic.Type & EPlatform.TriggerOn) == EPlatform.TriggerOn)
-                .Subscribe(e => logic.TargetingOn(e.gameObject)).AddTo(_disposable);
+                else if (type == EPlatform.TriggerOn)
+                    logic.Transform?.OnTriggerStay2DAsObservable()
+                        .Subscribe(e => logic.TargetingOn(e.gameObject)).AddTo(_disposable);
 
-            logic.Target?.OnTriggerStay2DAsObservable()
-                .WhereU(_ => (logic.Type & EPlatform.TriggerOff) == EPlatform.TriggerOff)
-                .Subscribe(e => logic.TargetingOff(e.gameObject)).AddTo(_disposable);
+                else if (type == EPlatform.TriggerOff)
+                    logic.Target?.OnTriggerStay2DAsObservable()
+                        .Subscribe(e => logic.TargetingOff(e.gameObject)).AddTo(_disposable);
 
-            logic.Transform?.OnCollisionStay2DAsObservable()
-                .WhereU(e =>
-                    (logic.Type & EPlatform.ColliderOn) == EPlatform.ColliderOn)
-                .Subscribe(e => logic.TargetingOn(e.gameObject)).AddTo(_disposable);
+                else if (type == EPlatform.ColliderOn)
+                    logic.Transform?.OnCollisionStay2DAsObservable()
+                        .Subscribe(e => logic.TargetingOn(e.gameObject)).AddTo(_disposable);
 
-            logic.Target?.OnCollisionStay2DAsObservable()
-                .WhereU(_ => (logic.Type & EPlatform.ColliderOff) == EPlatform.ColliderOff)
-                .Subscribe(e => logic.TargetingOff(e.gameObject)).AddTo(_disposable);
+                else if (type == EPlatform.ColliderOff)
+                    logic.Target?.OnCollisionStay2DAsObservable()
+                        .Subscribe(e => logic.TargetingOff(e.gameObject)).AddTo(_disposable);
+            }
         }
 
         public void Dispose()
@@ -100,8 +99,6 @@ namespace Envir.Platform
     [Serializable]
     public abstract class IState : ILogic
     {
-        public EPlatform platform { get; set; }
-
         public BoolReactiveProperty IsNext { get; } = new();
     }
 
@@ -129,7 +126,7 @@ namespace Envir.Platform
 
         public override void Updater()
         {
-            if (Vector3.Distance(Transform.position, Target.position) <= _distance)
+            if (Vector3.Distance(Transform.transform.position, Target.transform.position) <= _distance)
                 IsNext.Value = true;
         }
     }
@@ -187,7 +184,8 @@ namespace Envir.Platform
 
         public override void TargetingOn(GameObject target)
         {
-            if (target.GetInstanceID() == Target.gameObject.GetInstanceID() && Target.TryGetComponent(out BaseOptionLogics logic))
+            if (target.GetInstanceID() == Target.gameObject.GetInstanceID() &&
+                Target.TryGetComponent(out BaseOptionLogics logic))
             {
                 logic.NextState();
                 if (isNextOnTarget)
@@ -203,22 +201,23 @@ namespace Envir.Platform
         [SerializeField] private float speed;
         [SerializeField] private bool isLoop;
 
-        [SerializeField, ShowIf("@isLoop == false")]
-        private float expDist = 0.01f;
+        [SerializeField] private float expDist = 0.01f;
+
+        private int _to;
 
         public override void Init()
         {
             IsNext.Value = false;
-            platform = EPlatform.Updater;
+            platform = EPlatform.UpdaterFixed;
         }
 
         public override void Updater()
         {
-            rigidbody2D.velocity = new Vector2(
-                Transform.position.x > Target.position.x ? 1 : -1 * speed,
-                rigidbody2D.velocity.y);
+            _to = Transform.transform.position.x > Target.transform.position.x + _to * (isLoop ? expDist : 0) ? -1 : 1;
 
-            if (!isLoop && Vector2.Distance(Transform.position, Target.position) <= expDist)
+            rigidbody2D.velocity = new Vector2(_to * speed, rigidbody2D.velocity.y);
+
+            if (!isLoop && Vector2.Distance(Transform.transform.position, Target.transform.position) <= expDist)
                 IsNext.Value = true;
         }
     }

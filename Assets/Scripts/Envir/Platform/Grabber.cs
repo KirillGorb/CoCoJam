@@ -74,7 +74,7 @@ namespace Envir.Platform
 
         public override void Updater()
         {
-            MoveGrabbedObjectAsync(Target);
+            MoveGrabbedObjectAsync(Target.transform);
         }
     }
 }
