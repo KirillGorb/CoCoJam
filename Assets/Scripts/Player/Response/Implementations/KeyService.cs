@@ -5,6 +5,7 @@ using CodeScripts.PlayerResponse.Implementations.Conditions;
 using CodeScripts.PlayerResponse.Player.Response.Implementations.Conditions;
 using CodeScripts.Timeline;
 using Cysharp.Threading.Tasks;
+using Sirenix.Utilities;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -18,11 +19,13 @@ namespace CodeScripts.PlayerResponse.Implementations
         public void Initialize()
         {
             _componentResponseSwitcher.AddResponse(typeof(KeyObject), this);
+
+            Object.FindObjectsOfType<KeyObject>().ForEach(e =>  e.gameObject.SetActive(_timeline.GetActive(e.Key)));
         }
 
         public UniTask Response<T>(T data, CancellationToken token = default) where T : IData
         {
-            if (data is not ServiceInteraction s) 
+            if (data is not ServiceInteraction s)
                 return UniTask.CompletedTask;
 
             _timeline.SetActive(s.key.IdKey, true);

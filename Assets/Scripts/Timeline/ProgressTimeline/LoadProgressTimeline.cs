@@ -68,6 +68,8 @@ namespace CodeScripts.Timeline
             _saver.SaveData(Load);
         }
 
+        public bool GetActive(int id) => !_data.AllCollapse.Containers[id].Data.Value.IsActivate;
+
         public void SetActive((int id, bool isActivate)[] value)
         {
             foreach (var item in value)
