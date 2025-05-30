@@ -30,7 +30,6 @@ namespace CodeScripts.Player
             BindData();
             BindInstances();
             BindServices();
-            Blocks();
         }
 
         private void BindInstances()
@@ -115,11 +114,6 @@ namespace CodeScripts.Player
 
             Container.BindInterfacesAndSelfTo<DataKill>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<DataUpJump>().FromNew().AsSingle();
-        }
-
-        private void Blocks()
-        {
-            Container.Bind<PlatformContainer>().AsSingle();
         }
     }
 }

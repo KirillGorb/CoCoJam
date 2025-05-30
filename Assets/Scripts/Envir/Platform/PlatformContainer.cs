@@ -1,10 +1,13 @@
 using System;
+using System.Linq;
 using CodeScripts.Envir.Envir;
 using Sirenix.OdinInspector;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
+using Zenject.SpaceFighter;
 
 namespace Envir.Platform
 {
@@ -21,11 +24,15 @@ namespace Envir.Platform
     {
         Static = 0,
         TriggerOn = 1 << 1,
-        TriggerOff = 1 << 2,
-        ColliderOn = 1 << 3,
-        ColliderOff = 1 << 4,
-        Updater = 1 << 5,
-        UpdaterFixed = 1 << 5,
+        TriggerOnEx = 1 << 2,
+        TriggerOff = 1 << 3,
+        ColliderOn = 1 << 4,
+        ColliderOnEx = 1 << 5,
+        ColliderOff = 1 << 6,
+        Updater = 1 << 7,
+        UpdaterFixed = 1 << 8,
+        TriggerOnEnt = 1 << 9,
+        ColliderOnEnt = 1 << 10,
     }
 
     [Serializable]
@@ -36,6 +43,10 @@ namespace Envir.Platform
 
         public EPlatform platform { get; set; }
         public abstract void Init();
+
+        public virtual void SetNext(object data)
+        {
+        }
 
         public virtual void Updater()
         {
@@ -50,6 +61,22 @@ namespace Envir.Platform
         }
 
         /// <summary>
+        /// Кого касаемся мы в моменте?
+        /// </summary>
+        /// <param name="target">результат кого мы каснулись</param>
+        public virtual void TargetingOnEnt(GameObject target)
+        {
+        }
+
+        /// <summary>
+        /// Кого  мы ne касаемся?
+        /// </summary>
+        /// <param name="target">результат кого мы каснулись</param>
+        public virtual void TargetingOnEx(GameObject target)
+        {
+        }
+
+        /// <summary>
         /// Кого касаеться наша цель
         /// </summary>
         /// <param name="target"> результат кого он каснулся</param>
@@ -58,48 +85,47 @@ namespace Envir.Platform
         }
     }
 
-    public class PlatformContainer : IDisposable
-    {
-        private readonly CompositeDisposable _disposable = new();
-
-        public void Subscriber(ILogic logic)
-        {
-            foreach (EPlatform type in Enum.GetValues(logic.platform.GetType()))
-            {
-                if (type == EPlatform.UpdaterFixed)
-                    Observable.EveryFixedUpdate().Subscribe(_ => logic.Updater()).AddTo(_disposable);
-
-                else if (type == EPlatform.Updater)
-                    Observable.EveryUpdate().Subscribe(_ => logic.Updater()).AddTo(_disposable);
-
-                else if (type == EPlatform.TriggerOn)
-                    logic.Transform?.OnTriggerStay2DAsObservable()
-                        .Subscribe(e => logic.TargetingOn(e.gameObject)).AddTo(_disposable);
-
-                else if (type == EPlatform.TriggerOff)
-                    logic.Target?.OnTriggerStay2DAsObservable()
-                        .Subscribe(e => logic.TargetingOff(e.gameObject)).AddTo(_disposable);
-
-                else if (type == EPlatform.ColliderOn)
-                    logic.Transform?.OnCollisionStay2DAsObservable()
-                        .Subscribe(e => logic.TargetingOn(e.gameObject)).AddTo(_disposable);
-
-                else if (type == EPlatform.ColliderOff)
-                    logic.Target?.OnCollisionStay2DAsObservable()
-                        .Subscribe(e => logic.TargetingOff(e.gameObject)).AddTo(_disposable);
-            }
-        }
-
-        public void Dispose()
-        {
-            _disposable?.Dispose();
-        }
-    }
-
     [Serializable]
     public abstract class IState : ILogic
     {
         public BoolReactiveProperty IsNext { get; } = new();
+        public ReactiveCommand<object> Next { get; } = new();
+
+        public virtual void Abort(){}
+    }
+
+    public class FindTargetParam : IState 
+    {
+        [SerializeField] private bool isDist;
+        [SerializeField, ShowIf("@isDist")] private float distFind;
+
+        [SerializeField] private ETargetType findType = ETargetType.Player;
+
+        [SerializeField] private ContainerFinder _finder;
+
+        public override void Init()
+        {
+            IsNext.Value = false;
+            platform = EPlatform.Static;
+            Find();
+        }
+
+        private void Find()
+        {
+            if (isDist)
+            {
+                foreach (var obj in _finder.GetContainer(findType))
+                    if (Vector2.Distance(Transform.transform.position, obj.transform.position) > distFind &&
+                        obj.TryGetComponent(out Collider2D collider))
+                        Next.Execute(collider);
+            }
+            else
+            {
+                foreach (var obj in _finder.GetContainer(findType))
+                    if (obj.TryGetComponent(out Collider2D collider))
+                        Next.Execute(collider);
+            }
+        }
     }
 
     public class None : IState
@@ -109,8 +135,6 @@ namespace Envir.Platform
             IsNext.Value = false;
             platform = EPlatform.Static;
         }
-
-        public void Next() => IsNext.Value = true;
     }
 
     [Serializable]
@@ -132,6 +156,39 @@ namespace Envir.Platform
     }
 
     [Serializable]
+    public class CheckDoubleClickDown : IState
+    {
+        [SerializeField] private UnityEvent meConnected = new();
+        [SerializeField] private UnityEvent meNoConnected = new();
+
+        [SerializeField] private bool isNextOnTarget;
+
+        private bool isCheck = false;
+
+        public override void Init()
+        {
+            IsNext.Value = false;
+            platform = EPlatform.TriggerOnEnt | EPlatform.ColliderOnEnt;
+            meNoConnected.Invoke();
+        }
+
+        public override void TargetingOnEnt(GameObject target)
+        {
+            isCheck = !isCheck;
+
+            if (isCheck)
+            {
+                meConnected.Invoke();
+
+                if (isNextOnTarget)
+                    IsNext.Value = true;
+            }
+            else
+                meNoConnected.Invoke();
+        }
+    }
+
+    [Serializable]
     public class CheckClickDown : IState
     {
         [SerializeField] private UnityEvent meConnected = new();
@@ -144,6 +201,26 @@ namespace Envir.Platform
         }
 
         public override void TargetingOn(GameObject target)
+        {
+            meConnected.Invoke();
+            if (isNextOnTarget)
+                IsNext.Value = true;
+        }
+    }
+
+    [Serializable]
+    public class CheckClickUp : IState
+    {
+        [SerializeField] private UnityEvent meConnected = new();
+        [SerializeField] private bool isNextOnTarget;
+
+        public override void Init()
+        {
+            IsNext.Value = false;
+            platform = EPlatform.TriggerOnEx | EPlatform.ColliderOnEx;
+        }
+
+        public override void TargetingOnEx(GameObject target)
         {
             meConnected.Invoke();
             if (isNextOnTarget)
@@ -219,6 +296,39 @@ namespace Envir.Platform
 
             if (!isLoop && Vector2.Distance(Transform.transform.position, Target.transform.position) <= expDist)
                 IsNext.Value = true;
+        }
+    }
+
+    [Serializable]
+    public class MoveTo : IState
+    {
+        [SerializeField] private Rigidbody2D rigidbody2D;
+        [SerializeField] private float speed;
+
+        [SerializeField] private float expDist = 0.01f;
+
+        public override void Init()
+        {
+            IsNext.Value = false;
+            platform = EPlatform.UpdaterFixed;
+        }
+
+        public override void Updater()
+        {
+            var dir = (Vector2)Target.transform.position - rigidbody2D.position;
+
+            rigidbody2D.velocity = dir.normalized * speed;
+
+            if (Vector2.Distance(rigidbody2D.position, Target.transform.position) <= expDist)
+            {
+                rigidbody2D.velocity =Vector2.zero;
+                IsNext.Value = true;
+            }
+        }
+
+        public override void Abort()
+        {
+            rigidbody2D.velocity =Vector2.zero;
         }
     }
 }
