@@ -71,6 +71,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Skill"",
+                    ""type"": ""Button"",
+                    ""id"": ""17f01b7a-a509-4904-a01d-1ccdc6cf54e2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -227,6 +236,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7fdb7b48-9430-40ff-96d2-2fe08835cb6c"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -291,6 +311,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Movement_SharpDescent = m_Movement.FindAction("SharpDescent", throwIfNotFound: true);
         m_Movement_PuckUp = m_Movement.FindAction("PuckUp", throwIfNotFound: true);
         m_Movement_Rotate = m_Movement.FindAction("Rotate", throwIfNotFound: true);
+        m_Movement_Skill = m_Movement.FindAction("Skill", throwIfNotFound: true);
         // Controll
         m_Controll = asset.FindActionMap("Controll", throwIfNotFound: true);
         m_Controll_Rallback = m_Controll.FindAction("Rallback", throwIfNotFound: true);
@@ -360,6 +381,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Movement_SharpDescent;
     private readonly InputAction m_Movement_PuckUp;
     private readonly InputAction m_Movement_Rotate;
+    private readonly InputAction m_Movement_Skill;
     public struct MovementActions
     {
         private @PlayerInput m_Wrapper;
@@ -369,6 +391,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @SharpDescent => m_Wrapper.m_Movement_SharpDescent;
         public InputAction @PuckUp => m_Wrapper.m_Movement_PuckUp;
         public InputAction @Rotate => m_Wrapper.m_Movement_Rotate;
+        public InputAction @Skill => m_Wrapper.m_Movement_Skill;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -393,6 +416,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Rotate.started += instance.OnRotate;
             @Rotate.performed += instance.OnRotate;
             @Rotate.canceled += instance.OnRotate;
+            @Skill.started += instance.OnSkill;
+            @Skill.performed += instance.OnSkill;
+            @Skill.canceled += instance.OnSkill;
         }
 
         private void UnregisterCallbacks(IMovementActions instance)
@@ -412,6 +438,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Rotate.started -= instance.OnRotate;
             @Rotate.performed -= instance.OnRotate;
             @Rotate.canceled -= instance.OnRotate;
+            @Skill.started -= instance.OnSkill;
+            @Skill.performed -= instance.OnSkill;
+            @Skill.canceled -= instance.OnSkill;
         }
 
         public void RemoveCallbacks(IMovementActions instance)
@@ -500,6 +529,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnSharpDescent(InputAction.CallbackContext context);
         void OnPuckUp(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+        void OnSkill(InputAction.CallbackContext context);
     }
     public interface IControllActions
     {

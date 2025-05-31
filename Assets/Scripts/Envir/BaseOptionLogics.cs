@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Envir.Platform;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace CodeScripts.Envir.Envir
 {
@@ -11,6 +12,10 @@ namespace CodeScripts.Envir.Envir
 
         private IState _current;
         private int _id;
+
+        private readonly List<object> _dataPoll = new();
+
+        [Inject] private readonly DiContainer _container;
 
         private void OnEnable()
         {
@@ -28,21 +33,19 @@ namespace CodeScripts.Envir.Envir
 
         private void Awake()
         {
-            int i = 0;
             foreach (var state in statesQueue)
             {
+                if (state.IsBind)
+                    _container.Inject(state);
+
                 state.IsNext.WhereU(e => e).Subscribe(_ => NextState()).AddTo(this);
-                var n = (i + 1) % statesQueue.Count;
                 state.Next.Subscribe(e =>
                 {
+                    _dataPoll.Add(e);
                     state.IsNext.Value = true;
-                    if (e is Collider2D c)
-                        statesQueue[n].Target = c;
-                    else
-                        statesQueue[n].SetNext(e);
+                    foreach (var lstate in statesQueue)
+                        lstate.SetNext(_dataPoll);
                 }).AddTo(this);
-
-                i++;
             }
         }
 

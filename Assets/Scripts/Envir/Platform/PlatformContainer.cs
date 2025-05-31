@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CodeScripts.Envir.Envir;
 using Sirenix.OdinInspector;
@@ -8,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Zenject;
 using Zenject.SpaceFighter;
+using Object = UnityEngine.Object;
 
 namespace Envir.Platform
 {
@@ -38,14 +40,22 @@ namespace Envir.Platform
     [Serializable]
     public abstract class ILogic
     {
-        [field: SerializeField] public Collider2D Transform { get; set; }
-        [field: SerializeField] public Collider2D Target { get; set; }
+        [field: SerializeField] public Collider2D Transform { get; private set; }
+        [field: SerializeField] public Collider2D Target { get; private set; }
+
+        [SerializeField] private bool isLoadNext;
 
         public EPlatform platform { get; set; }
         public abstract void Init();
 
-        public virtual void SetNext(object data)
+        public virtual void SetNext(IReadOnlyCollection<object> data)
         {
+            if (!isLoadNext) return;
+            foreach (var o in data)
+            {
+                if (o is Collider2D c)
+                    Target = c;
+            }
         }
 
         public virtual void Updater()
@@ -88,13 +98,17 @@ namespace Envir.Platform
     [Serializable]
     public abstract class IState : ILogic
     {
+        public bool IsBind;
+
         public BoolReactiveProperty IsNext { get; } = new();
         public ReactiveCommand<object> Next { get; } = new();
 
-        public virtual void Abort(){}
+        public virtual void Abort()
+        {
+        }
     }
 
-    public class FindTargetParam : IState 
+    public class FindTargetParam : IState
     {
         [SerializeField] private bool isDist;
         [SerializeField, ShowIf("@isDist")] private float distFind;
@@ -321,14 +335,14 @@ namespace Envir.Platform
 
             if (Vector2.Distance(rigidbody2D.position, Target.transform.position) <= expDist)
             {
-                rigidbody2D.velocity =Vector2.zero;
+                rigidbody2D.velocity = Vector2.zero;
                 IsNext.Value = true;
             }
         }
 
         public override void Abort()
         {
-            rigidbody2D.velocity =Vector2.zero;
+            rigidbody2D.velocity = Vector2.zero;
         }
     }
 }

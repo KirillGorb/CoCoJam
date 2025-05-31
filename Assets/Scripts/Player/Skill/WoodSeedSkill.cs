@@ -5,7 +5,7 @@ using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
 
-namespace Player.Skill
+namespace CodeScripts.Skill
 {
     public class WoodSeedSkill : IInitializable
     {
@@ -15,10 +15,12 @@ namespace Player.Skill
         private float _timeSpawn;
 
         private readonly CompositeDisposable _disposable = new();
-        private readonly WoodSeed woodSeed = new();
+        private WoodSeed woodSeed;
 
         public void Initialize()
         {
+            woodSeed = new(_disposable);
+
             InputCallback.Skill.WhereU(e => e).Subscribe(_ =>
             {
                 if (timeSpawn + _timeSpawn >= Time.time)
@@ -32,51 +34,49 @@ namespace Player.Skill
 
     public class WoodSeed
     {
-        private GameObject prefab;
-        private float radius;
-        private LayerMask layerCheck;
-        
-        private readonly CompositeDisposable _disposable = new();
+        private GameObject _prefab;
+        private float _radius;
+        private LayerMask _layerCheck;
+
+        private float _timeLife;
+        private float _timeSize;
+        private float _sizeUp;
 
         public Transform Target { get; set; }
 
-        public WoodSeed()
+        public WoodSeed(CompositeDisposable disposable)
         {
-            Observable.EveryFixedUpdate().WhereU(_ => Target is not null).Subscribe(_ => SelectCollision()).AddTo(_disposable);
+            Observable.EveryFixedUpdate().Subscribe(_ => SelectCollision()).AddTo(disposable);
         }
 
         private void SelectCollision()
         {
-            var c = Physics2D.OverlapCircle(Target.position, radius, layerCheck);
-            if (c && c.TryGetComponent(out Collision other))
+            if (Target == null) return;
+
+            var c = Physics2D.OverlapCircle(Target.position, _radius, _layerCheck);
+            if (c && c.TryGetComponent(out Collision2D other))
             {
-                var w = Object.Instantiate(prefab);
-                w.transform.position = other.contacts[0].normal;
-                _ = new Wood(w.transform);
+                var w = Object.Instantiate(_prefab);
+                w.transform.position = other.contacts[0].point;
+                Set(w.transform);
                 Target = null;
             }
         }
-    }
 
-    public class Wood
-    {
-        private float timeLife;
-        private float timeSize;
-        private float sizeUp;
-
-        public Wood(Transform target)
+        private void Set(Transform target)
         {
             Up(target).Forget();
-            Object.Destroy(target, timeSize + timeLife);
+            Object.Destroy(target, _timeSize + _timeLife);
         }
 
         private async UniTaskVoid Up(Transform target)
         {
-            while (timeSize > 0)
+            while (_timeSize > 0)
             {
-                timeSize -= Time.deltaTime;
-                await UniTask.Delay(10);
-                target.localScale += Vector3.one * sizeUp;
+                _timeSize -= Time.deltaTime;
+                await UniTask.Yield();
+                target.localScale += Vector3.up * (_sizeUp * Time.deltaTime);
+                target.position -= Vector3.up * (_sizeUp * Time.deltaTime);
             }
         }
     }

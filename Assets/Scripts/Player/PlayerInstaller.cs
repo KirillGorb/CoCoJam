@@ -30,6 +30,7 @@ namespace CodeScripts.Player
             BindData();
             BindInstances();
             BindServices();
+            BindDrop();
         }
 
         private void BindInstances()
@@ -114,6 +115,11 @@ namespace CodeScripts.Player
 
             Container.BindInterfacesAndSelfTo<DataKill>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<DataUpJump>().FromNew().AsSingle();
+        }
+
+        private void BindDrop()
+        {
+            Container.Bind<IDropPuckLogic>().WithId(ETargetType.Player).To<PlayerUpDown>().FromNew().AsTransient();
         }
     }
 }
