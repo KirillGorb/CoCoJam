@@ -1,4 +1,3 @@
-using CodeScripts.PlayerInputs;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
@@ -9,31 +8,27 @@ namespace CodeScripts.Skill
 {
     public class WoodSeedSkill : IInitializable
     {
+        [Inject] private readonly ClickService _click;
+
         private GameObject prefab;
         private float timeSpawn;
 
         private float _timeSpawn;
 
         private readonly CompositeDisposable _disposable = new();
-        private WoodSeed woodSeed;
 
         public void Initialize()
         {
-            woodSeed = new(_disposable);
-
-            InputCallback.Skill.WhereU(e => e).Subscribe(_ =>
+            _click.RaycastClick.Subscribe(e =>
             {
-                if (timeSpawn + _timeSpawn >= Time.time)
-                {
-                    _timeSpawn = Time.time;
-                    woodSeed.Target = Object.Instantiate(prefab).transform;
-                }
+                var w = Object.Instantiate(_prefab);
+                w.transform.position = e.Item2;
+                Set(w.transform);
+                Target = null;
             }).AddTo(_disposable);
+           // Observable.EveryFixedUpdate().Subscribe(_ => SelectCollision()).AddTo(_disposable);
         }
-    }
 
-    public class WoodSeed
-    {
         private GameObject _prefab;
         private float _radius;
         private LayerMask _layerCheck;
@@ -43,11 +38,6 @@ namespace CodeScripts.Skill
         private float _sizeUp;
 
         public Transform Target { get; set; }
-
-        public WoodSeed(CompositeDisposable disposable)
-        {
-            Observable.EveryFixedUpdate().Subscribe(_ => SelectCollision()).AddTo(disposable);
-        }
 
         private void SelectCollision()
         {

@@ -31,6 +31,12 @@ namespace Envir.Platform
 
             IsNext.Value = true;
         }
+
+        public override void Abort()
+        {
+            Target.transform.parent = null;
+            _dropPuckLogic.Down();
+        }
     }
 
     public interface IDropPuckLogic

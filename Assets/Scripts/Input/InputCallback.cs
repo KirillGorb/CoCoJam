@@ -15,8 +15,8 @@ namespace CodeScripts.PlayerInputs
         public static bool PuckUpInput { get; private set; }
         public static bool SedInput { get; private set; }
 
-        public readonly static BoolReactiveProperty Rallback = new();
-        public readonly static BoolReactiveProperty Skill = new();
+        public static BoolReactiveProperty Rallback { get; } = new();
+        public static Vector2ReactiveProperty Skill { get; } = new();
 
         private void Awake()
         {
@@ -52,8 +52,8 @@ namespace CodeScripts.PlayerInputs
             _input.Controll.Rallback.performed += _ => Rallback.Value = true;
             _input.Controll.Rallback.canceled += _ => Rallback.Value = false;
 
-            _input.Movement.Skill.performed += _ => Skill.Value = true;
-            _input.Movement.Skill.canceled += _ => Skill.Value = false;
+            //   _input.Movement.Skill.performed += _ => Skill.Value = true;
+            //  _input.Movement.Skill.canceled += _ => Skill.Value = false;
         }
 
         private void OnDisable()

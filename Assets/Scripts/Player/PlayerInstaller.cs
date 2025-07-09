@@ -7,6 +7,7 @@ using CodeScripts.PlayerResponse;
 using CodeScripts.PlayerResponse.Implementations;
 using CodeScripts.PlayerResponse.Player.Response.Implementations.Conditions;
 using CodeScripts.Respawn;
+using CodeScripts.Skill;
 using Envir.Platform;
 using UnityEngine;
 using Zenject;
@@ -120,6 +121,12 @@ namespace CodeScripts.Player
         private void BindDrop()
         {
             Container.Bind<IDropPuckLogic>().WithId(ETargetType.Player).To<PlayerUpDown>().FromNew().AsTransient();
+        }
+
+        private void LoadSkill()
+        {
+            Container.BindInterfacesAndSelfTo<ClickService>().FromNew().AsSingle();
+            Container.BindInterfacesAndSelfTo<WoodSeedSkill>().FromNew().AsSingle();
         }
     }
 }

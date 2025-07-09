@@ -74,9 +74,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Skill"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""17f01b7a-a509-4904-a01d-1ccdc6cf54e2"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -240,7 +240,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""7fdb7b48-9430-40ff-96d2-2fe08835cb6c"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""path"": ""<Mouse>/position"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
